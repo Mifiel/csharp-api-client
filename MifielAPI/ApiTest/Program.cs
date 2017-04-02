@@ -24,8 +24,9 @@ namespace ApiTest
 
             try
             {
-                Console.WriteLine("Get all documents...");
                 Documents docs = new Documents(api);
+
+                Console.WriteLine("Get all documents...");
                 var allDocs = docs.FindAll();
                 foreach (var item in allDocs)
                 {

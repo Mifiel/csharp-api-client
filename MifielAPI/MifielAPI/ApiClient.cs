@@ -112,9 +112,6 @@ namespace MifielAPI
 
             requestMessage.Headers.Add("Authorization", authorizationHeader);
             requestMessage.Headers.Add("Date", date);
-
-            //if (requestMessage.Content != null)
-            //    requestMessage.Content.Headers.ContentMD5 = Encoding.ASCII.GetBytes(contentMd5);
         }
 
         private string GetSignature(Rest.HttpMethod httpMethod, string path, string contentMd5, string date, string contentType)
