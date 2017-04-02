@@ -40,25 +40,25 @@ namespace MifielAPI
 
         public string Get(string path)
         {
-            return sendRequest(Rest.HttpMethod.GET, path, new StringContent(""));
+            return SendRequest(Rest.HttpMethod.GET, path, new StringContent(""));
         }
 
         public string Post(string path, HttpContent content)
         {
-            return sendRequest(Rest.HttpMethod.POST, path, content);
+            return SendRequest(Rest.HttpMethod.POST, path, content);
         }
 
         public string Delete(string path)
         {
-            return sendRequest(Rest.HttpMethod.DELETE, path, new StringContent(""));
+            return SendRequest(Rest.HttpMethod.DELETE, path, new StringContent(""));
         }
 
         public string Put(string path, HttpContent content)
         {
-            return sendRequest(Rest.HttpMethod.PUT, path, content);
+            return SendRequest(Rest.HttpMethod.PUT, path, content);
         }
         
-        private string sendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
+        private string SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
         {            
             string requestUri = url + _apiVersion + path;
             HttpRequestMessage requestMessage = null;
@@ -67,63 +67,63 @@ namespace MifielAPI
 
             using (var client = new HttpClient())
             {
-                switch (httpMethod)
+                using (content)
                 {
-                    case Rest.HttpMethod.POST:
-                        requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, requestUri);
-                        requestMessage.Content = content;
-                        break;
-                    case Rest.HttpMethod.GET:
-                        requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, requestUri);
-                        break;
-                    case Rest.HttpMethod.PUT:
-                        requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Put, requestUri);
-                        requestMessage.Content = content;
-                        break;
-                    case Rest.HttpMethod.DELETE:
-                        requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Delete, requestUri);
-                        break;
-                    default:
-                        throw new MifielException("Unsupported HttpMethod: " + httpMethod.ToString());
+                    switch (httpMethod)
+                    {
+                        case Rest.HttpMethod.POST:
+                            requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, requestUri);
+                            requestMessage.Content = content;
+                            break;
+                        case Rest.HttpMethod.GET:
+                            requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, requestUri);
+                            break;
+                        case Rest.HttpMethod.PUT:
+                            requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Put, requestUri);
+                            requestMessage.Content = content;
+                            break;
+                        case Rest.HttpMethod.DELETE:
+                            requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Delete, requestUri);
+                            break;
+                        default:
+                            throw new MifielException("Unsupported HttpMethod: " + httpMethod.ToString());
+                    }
+
+                    SetAuthentication(httpMethod, path, requestMessage);
+                    
+                    httpResponse = client.SendAsync(requestMessage).Result;
+                    response = httpResponse.Content.ReadAsStringAsync().Result;
+
+                    if (!httpResponse.IsSuccessStatusCode)
+                        throw new MifielException("Status code error: " + httpResponse.StatusCode, response);
+
+                    return response;
                 }
-
-                SetAuthentication(httpMethod, requestUri, requestMessage);
-                                
-                httpResponse = client.SendAsync(requestMessage).Result;
-                response = httpResponse.Content.ReadAsStringAsync().Result;
-
-                if (!httpResponse.IsSuccessStatusCode)
-                    throw new MifielException("Status code error: " + httpResponse.StatusCode, response);
-
-                return response;
             }
         }
 
-        private void SetAuthentication(Rest.HttpMethod httpMethod, string requestUri, HttpRequestMessage requestMessage)
+        private void SetAuthentication(Rest.HttpMethod httpMethod, string path, HttpRequestMessage requestMessage)
         {
             string contentType = requestMessage.Content == null ? "" : requestMessage.Content.Headers.ContentType.ToString();
-            string date = DateTime.Now.ToString("r", _usCulture);
-            string contentMd5 = "";// MifielUtils.calculateMD5(content);
-            string signature = GetSignature(httpMethod, requestUri, contentMd5, date, contentType);
+            string date = DateTime.Now.ToUniversalTime().ToString("r", _usCulture);
+            string contentMd5 = "";// MifielUtils.CalculateMD5(content);
+            string signature = GetSignature(httpMethod, path, contentMd5, date, contentType);
             string authorizationHeader = string.Format("APIAuth {0}:{1}", AppId, signature);
 
             requestMessage.Headers.Add("Authorization", authorizationHeader);
             requestMessage.Headers.Add("Date", date);
 
-            if (!string.IsNullOrEmpty(contentType))
-                requestMessage.Headers.Add("Content-Type", contentType);
-
-            if (requestMessage.Content != null)
-                requestMessage.Content.Headers.ContentMD5 = Encoding.ASCII.GetBytes(contentMd5);
+            //if (requestMessage.Content != null)
+            //    requestMessage.Content.Headers.ContentMD5 = Encoding.ASCII.GetBytes(contentMd5);
         }
 
-        private string GetSignature(Rest.HttpMethod httpMethod, string requestUri, string contentMd5, string date, string contentType)
+        private string GetSignature(Rest.HttpMethod httpMethod, string path, string contentMd5, string date, string contentType)
         {
             string canonicalString = string.Format("{0},{1},{2},{3},{4}",
                                             httpMethod.ToString(),
                                             contentType,
                                             contentMd5,
-                                            requestUri,
+                                            _apiVersion + path,
                                             date);
 
             return MifielUtils.CalculateHMAC(AppSecret, canonicalString);

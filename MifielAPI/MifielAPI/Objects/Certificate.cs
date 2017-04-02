@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace MifielAPI.Objects
 {
     public class Certificate
     {
-        public String id;
-        public String file;
-        public String typeOf;
-        public String cerHex;
-        public String owner;
-        public String taxId;
-        public String expiresAt;
-        public Boolean expired;
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("file")]
+        public string File { get; set; }
+        [JsonProperty("type_of")]
+        public string TypeOf { get; set; }
+        [JsonProperty("cer_hex")]
+        public string CerHex { get; set; }
+        [JsonProperty("owner")]
+        public string Owner { get; set; }
+        [JsonProperty("tax_id")]
+        public string TaxId { get; set; }
+        [JsonProperty("expires_at")]
+        public string ExpiresAt { get; set; }
+        [JsonProperty("expired")]
+        public bool Expired { get; set; }
     }
 }

@@ -6,6 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace MifielAPI.Utils
 {
@@ -14,7 +17,6 @@ namespace MifielAPI.Utils
         private static Regex _rgx = new Regex("/+$");
         private static SHA256 _sha256 = SHA256.Create();
         private static UTF8Encoding _utfEncoding = new UTF8Encoding();
-        private static JavaScriptSerializer serializer = new JavaScriptSerializer();
 
         public static bool IsValidUrl(string url)
         {
@@ -64,9 +66,9 @@ namespace MifielAPI.Utils
             try
             {
                 HMACSHA1 hmacSha1 = new HMACSHA1(Encoding.UTF8.GetBytes(appSecret));
-                byte[] byteArray = Encoding.ASCII.GetBytes(appSecret);
+                byte[] byteArray = Encoding.ASCII.GetBytes(canonicalString);
                 MemoryStream stream = new MemoryStream(byteArray);
-                return hmacSha1.ComputeHash(stream).Aggregate("", (s, e) => s + string.Format("{0:x2}", e), s => s);
+                return Convert.ToBase64String(hmacSha1.ComputeHash(stream));
             }
             catch (Exception ex)
             {
@@ -74,11 +76,26 @@ namespace MifielAPI.Utils
             }
         }
 
+        public static void AppendTextParamToContent(Dictionary<string, string> parameters, string name, string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                parameters.Add(name, value);
+            }
+        }
+
         public static T ConvertJsonToObject<T>(string json)
         {
             try
             {
-                return serializer.Deserialize<T>(json);
+                using (var stringReader = new StringReader(json))
+                {
+                    using (var jsonReader = new JsonTextReader(stringReader))
+                    {
+                        var jsonSerializer = new JsonSerializer();
+                        return jsonSerializer.Deserialize<T>(jsonReader);
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -90,7 +107,7 @@ namespace MifielAPI.Utils
         {
             try
             {
-                return serializer.Serialize(objectToConvert);
+                return JsonConvert.SerializeObject(objectToConvert);
             }
             catch (Exception e)
             {

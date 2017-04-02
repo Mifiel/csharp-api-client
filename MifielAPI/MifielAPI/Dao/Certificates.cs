@@ -1,8 +1,10 @@
 ﻿using MifielAPI.Objects;
 using MifielAPI.Utils;
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace MifielAPI.Dao
 {
@@ -31,14 +33,31 @@ namespace MifielAPI.Dao
 
         public override Certificate Save(Certificate certificate)
         {
-            HttpContent httpContent = BuildHttpBody(certificate);
-            string response = ApiClient.Post(_certificatesPath, httpContent);
-            return MifielUtils.ConvertJsonToObject<Certificate>(response);
+            if (string.IsNullOrEmpty(certificate.Id))
+            {
+                HttpContent httpContent = BuildHttpBody(certificate);
+                string response = ApiClient.Post(_certificatesPath, httpContent);
+                return MifielUtils.ConvertJsonToObject<Certificate>(response);
+            }
+            else
+            {
+                string json = MifielUtils.ConvertObjectToJson(certificate);
+                HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                string response = ApiClient.Put(_certificatesPath, httpContent);
+                return MifielUtils.ConvertJsonToObject<Certificate>(response);
+            }            
         }
 
         private HttpContent BuildHttpBody(Certificate certificate)
         {
-            throw new NotImplementedException();
+            string certificatePath = certificate.File;
+
+            MultipartFormDataContent multipartContent = new MultipartFormDataContent();
+            ByteArrayContent pdfContent = new ByteArrayContent(File.ReadAllBytes(certificatePath));
+            pdfContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/pkix-cert");
+
+            multipartContent.Add(pdfContent, "file", Path.GetFileName(certificatePath));
+            return multipartContent;
         }
     }
 }
