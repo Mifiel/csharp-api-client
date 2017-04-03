@@ -38,32 +38,31 @@ namespace MifielAPI
             Url = "https://www.mifiel.com";
         }
 
-        public string Get(string path)
+        public HttpContent Get(string path)
         {
             return SendRequest(Rest.HttpMethod.GET, path, new StringContent(""));
         }
 
-        public string Post(string path, HttpContent content)
+        public HttpContent Post(string path, HttpContent content)
         {
             return SendRequest(Rest.HttpMethod.POST, path, content);
         }
 
-        public string Delete(string path)
+        public HttpContent Delete(string path)
         {
             return SendRequest(Rest.HttpMethod.DELETE, path, new StringContent(""));
         }
 
-        public string Put(string path, HttpContent content)
+        public HttpContent Put(string path, HttpContent content)
         {
             return SendRequest(Rest.HttpMethod.PUT, path, content);
         }
         
-        private string SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
+        private HttpContent SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
         {            
             string requestUri = url + _apiVersion + path;
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
-            string response = "";
 
             using (var client = new HttpClient())
             {
@@ -92,12 +91,12 @@ namespace MifielAPI
                     SetAuthentication(httpMethod, path, requestMessage);
                     
                     httpResponse = client.SendAsync(requestMessage).Result;
-                    response = httpResponse.Content.ReadAsStringAsync().Result;
 
                     if (!httpResponse.IsSuccessStatusCode)
-                        throw new MifielException("Status code error: " + httpResponse.StatusCode, response);
+                        throw new MifielException("Status code error: " + httpResponse.StatusCode, 
+                                                    httpResponse.Content.ReadAsStringAsync().Result);
 
-                    return response;
+                    return httpResponse.Content;
                 }
             }
         }

@@ -21,13 +21,15 @@ namespace MifielAPI.Dao
 
         public override Certificate Find(string id)
         {
-            string response = ApiClient.Get(_certificatesPath);
+            HttpContent httpResponse = ApiClient.Get(_certificatesPath + "/" + id);
+            string response = httpResponse.ReadAsStringAsync().Result;
             return MifielUtils.ConvertJsonToObject<Certificate>(response);
         }
 
         public override List<Certificate> FindAll()
         {
-            string response = ApiClient.Get(_certificatesPath);
+            HttpContent httpResponse = ApiClient.Get(_certificatesPath);
+            string response = httpResponse.ReadAsStringAsync().Result;
             return MifielUtils.ConvertJsonToObject<List<Certificate>>(response);
         }
 
@@ -36,14 +38,16 @@ namespace MifielAPI.Dao
             if (string.IsNullOrEmpty(certificate.Id))
             {
                 HttpContent httpContent = BuildHttpBody(certificate);
-                string response = ApiClient.Post(_certificatesPath, httpContent);
+                HttpContent httpResponse = ApiClient.Post(_certificatesPath, httpContent);
+                string response = httpResponse.ReadAsStringAsync().Result;
                 return MifielUtils.ConvertJsonToObject<Certificate>(response);
             }
             else
             {
                 string json = MifielUtils.ConvertObjectToJson(certificate);
                 HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                string response = ApiClient.Put(_certificatesPath, httpContent);
+                HttpContent httpResponse = ApiClient.Put(_certificatesPath, httpContent);
+                string response = httpResponse.ReadAsStringAsync().Result;
                 return MifielUtils.ConvertJsonToObject<Certificate>(response);
             }            
         }

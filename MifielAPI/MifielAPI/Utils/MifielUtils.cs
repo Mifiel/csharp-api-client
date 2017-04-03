@@ -18,7 +18,7 @@ namespace MifielAPI.Utils
         private static SHA256 _sha256 = SHA256.Create();
         private static UTF8Encoding _utfEncoding = new UTF8Encoding();
 
-        public static bool IsValidUrl(string url)
+        internal static bool IsValidUrl(string url)
         {
             Uri uriResult;
             return Uri.TryCreate(url, UriKind.Absolute, out uriResult)
@@ -26,7 +26,7 @@ namespace MifielAPI.Utils
                         uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
-        public static string RemoveLastSlashFromUrl(string url)
+        internal static string RemoveLastSlashFromUrl(string url)
         {
             return _rgx.Replace(url, "");
         }
@@ -61,6 +61,19 @@ namespace MifielAPI.Utils
             }
         }
 
+        internal static void SaveHttpResponseToFile(HttpContent httpResponse, string localPath)
+        {
+            try
+            {
+                byte[] byteContent = httpResponse.ReadAsByteArrayAsync().Result;
+                File.WriteAllBytes(localPath, byteContent);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException("Error saving file", ex);
+            }
+        }
+
         public static string CalculateHMAC(string appSecret, string canonicalString)
         {
             try
@@ -76,7 +89,7 @@ namespace MifielAPI.Utils
             }
         }
 
-        public static void AppendTextParamToContent(Dictionary<string, string> parameters, string name, string value)
+        internal static void AppendTextParamToContent(Dictionary<string, string> parameters, string name, string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
