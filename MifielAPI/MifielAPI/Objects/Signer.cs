@@ -23,6 +23,6 @@ namespace MifielAPI.Objects
         [JsonProperty("fos")]
         public string Fos { get; set; }
         [JsonProperty("pos")]
-        public User Pos { get; set; }
+        public string Pos { get; set; }
     }
 }
