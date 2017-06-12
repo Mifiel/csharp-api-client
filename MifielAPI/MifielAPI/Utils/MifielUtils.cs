@@ -31,7 +31,7 @@ namespace MifielAPI.Utils
             return _rgx.Replace(url, "");
         }
 
-        public static string GetDocunentHash(string path)
+        public static string GetDocumentHash(string path)
         {
             try
             {

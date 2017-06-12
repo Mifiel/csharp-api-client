@@ -62,7 +62,7 @@ namespace MifielApiTests
         {
             SetSandboxUrl();
             Document doc = new Document();
-            doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocunentHash(_pdfFilePath);
+            doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocumentHash(_pdfFilePath);
             doc.FileName = "PdfFileName";
 
             doc = _docs.Save(doc);
@@ -104,7 +104,7 @@ namespace MifielApiTests
         {
             SetSandboxUrl();
             Document doc = new Document();
-            doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocunentHash(_pdfFilePath);
+            doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocumentHash(_pdfFilePath);
             doc.FileName = "PdfFileName";
             doc = _docs.Save(doc);
 
@@ -116,7 +116,7 @@ namespace MifielApiTests
         {
             SetSandboxUrl();
             Document doc = new Document();
-            doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocunentHash(_pdfFilePath);
+            doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocumentHash(_pdfFilePath);
             doc.FileName = "PdfFileName";
             doc = _docs.Save(doc);
 

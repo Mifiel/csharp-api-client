@@ -92,9 +92,20 @@ namespace MifielAPI.Dao
                 pdfContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/pdf");
 
                 multipartContent.Add(pdfContent, "file", Path.GetFileName(filePath));
+
+                if (signatures != null)
+                {
+                    for (int i = 0; i < signatures.Count; i++)
+                    {
+                        multipartContent.Add(new StringContent(signatures[i].SignatureStr), "signatories[" + i + "][name]");
+                        multipartContent.Add(new StringContent(signatures[i].Email), "signatories[" + i + "][email]");
+                        multipartContent.Add(new StringContent(signatures[i].TaxId), "signatories[" + i + "][tax_id]");
+                    }
+                }
+
                 return multipartContent;
             }
-            else if (!string.IsNullOrEmpty(originalHash) 
+            else if (!string.IsNullOrEmpty(originalHash)
                         && !string.IsNullOrEmpty(fileName))
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -115,7 +126,7 @@ namespace MifielAPI.Dao
                             "signatories[" + i + "][tax_id]", signatures[i].TaxId);
                     }
                 }
-                
+
                 return new FormUrlEncodedContent(parameters);
             }
             else
