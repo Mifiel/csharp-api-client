@@ -90,7 +90,7 @@ Document methods:
     // the original_hash and the name of the document. Both are required
     Document document2 = new Document() 
     {
-      OriginalHash = MifielUtils.GetDocunentHash("path/to/my-file.pdf"),
+      OriginalHash = MifielUtils.GetDocumentHash("path/to/my-file.pdf"),
       Signatures = ...
     }
 
