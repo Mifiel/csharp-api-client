@@ -35,5 +35,7 @@ namespace MifielAPI.Objects
         public string FileZipped { get; set; }
         [JsonProperty("signatures")]
         public List<Signature> Signatures { get; set; }
+        [JsonProperty("signers")]
+        public List<Signer> Signers { get; set; }
     }
 }
