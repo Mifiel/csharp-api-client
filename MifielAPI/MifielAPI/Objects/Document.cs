@@ -5,7 +5,6 @@ namespace MifielAPI.Objects
 {
     public class Document
     { 
-            
         [JsonProperty("id")]
         public string Id { get; set; }
         [JsonProperty("original_hash")]
@@ -38,8 +37,5 @@ namespace MifielAPI.Objects
         public List<Signature> Signatures { get; set; }
         [JsonProperty("signers")]
         public List<Signer> Signers { get; set; }
-
-
-
     }
 }
