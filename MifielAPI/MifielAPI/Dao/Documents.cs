@@ -1,4 +1,5 @@
-﻿using MifielAPI.Exceptions;
+﻿using System;
+using MifielAPI.Exceptions;
 using MifielAPI.Objects;
 using MifielAPI.Utils;
 using System.Collections.Generic;
@@ -93,20 +94,34 @@ namespace MifielAPI.Dao
 
                 multipartContent.Add(pdfContent, "file", Path.GetFileName(filePath));
 
+                var parameters =new  List <KeyValuePair<string, string>>();
+
+                if (!String.IsNullOrEmpty(document.CallbackUrl.Trim()))
+                {
+                    parameters.Add(new KeyValuePair<string, string>("callback_url", document.CallbackUrl));
+                }
+
                 if (signatures != null)
                 {
                     for (int i = 0; i < signatures.Count; i++)
                     {
-                        multipartContent.Add(new StringContent(signatures[i].SignatureStr), "signatories[" + i + "][name]");
-                        multipartContent.Add(new StringContent(signatures[i].Email), "signatories[" + i + "][email]");
-                        multipartContent.Add(new StringContent(signatures[i].TaxId), "signatories[" + i + "][tax_id]");
+                        parameters.Add(new KeyValuePair<string, string>("signatories[" + i + "][name]", signatures[i].SignerName));
+                        parameters.Add(new KeyValuePair<string, string>("signatories[" + i + "][email]", signatures[i].Email));
+                        parameters.Add(new KeyValuePair<string, string>("signatories[" + i + "][tax_id]", signatures[i].TaxId));
                     }
+                }
+
+
+                foreach (var keyValuePair in parameters)
+                {
+                    multipartContent.Add(new StringContent(keyValuePair.Value),
+                        String.Format("\"{0}\"", keyValuePair.Key));
                 }
 
                 return multipartContent;
             }
-            else if (!string.IsNullOrEmpty(originalHash)
-                        && !string.IsNullOrEmpty(fileName))
+            if (!string.IsNullOrEmpty(originalHash)
+                && !string.IsNullOrEmpty(fileName))
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("original_hash", originalHash);
@@ -119,7 +134,7 @@ namespace MifielAPI.Dao
                     for (int i = 0; i < signatures.Count; i++)
                     {
                         MifielUtils.AppendTextParamToContent(parameters,
-                            "signatories[" + i + "][name]", signatures[i].SignatureStr);
+                            "signatories[" + i + "][name]", signatures[i].SignerName);
                         MifielUtils.AppendTextParamToContent(parameters,
                             "signatories[" + i + "][email]", signatures[i].Email);
                         MifielUtils.AppendTextParamToContent(parameters,
@@ -129,10 +144,7 @@ namespace MifielAPI.Dao
 
                 return new FormUrlEncodedContent(parameters);
             }
-            else
-            {
-                throw new MifielException("You must provide file or original hash and file name");
-            }
+            throw new MifielException("You must provide file or original hash and file name");
         }
     }
 }

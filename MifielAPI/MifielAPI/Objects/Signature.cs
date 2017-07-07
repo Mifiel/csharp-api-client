@@ -15,7 +15,7 @@ namespace MifielAPI.Objects
         [JsonProperty("tax_id")]
         public string TaxId { get; set; }
         [JsonProperty("signature")]
-        public string SignatureStr { get; set; }
+        public string SignerName { get; set; }
         [JsonProperty("user")]
         public User User { get; set; }
     }

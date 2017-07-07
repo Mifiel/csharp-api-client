@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MifielAPI.Objects
 {
     public class Document
-    {
+    { 
         [JsonProperty("id")]
         public string Id { get; set; }
         [JsonProperty("original_hash")]

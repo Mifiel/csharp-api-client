@@ -2,11 +2,7 @@
 using MifielAPI.Utils;
 using System;
 using System.Net.Http;
-using MifielAPI.Rest;
 using System.Globalization;
-using System.Net.Http.Headers;
-using System.Linq;
-using System.Text;
 
 namespace MifielAPI
 {
@@ -59,7 +55,7 @@ namespace MifielAPI
         }
         
         private HttpContent SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
-        {            
+        {
             string requestUri = url + _apiVersion + path;
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;

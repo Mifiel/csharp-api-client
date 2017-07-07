@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MifielAPI;
 using MifielAPI.Dao;
 using System.Collections.Generic;
@@ -17,10 +16,10 @@ namespace MifielApiTests
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            string appId = "585763293c61baf5ac9d3819e4610dc25e76cade";
-            string appSecret = "SyD1xoS4JkaPoDPbfTnUG2QQ20SIV+WWxdQIZPSiH1WrK2E6LrWhWIjGeHeuSfxtteNsgQZo+Xq+fdriJexG7g==";
+            string appId = "bf8a81b18bffbacf70aa4ac9d5e496a2b7e0e6dd";
+            string appSecret = "hBVLKRTyat56vHcNPVsrSm4ItzmSuMBCrJybLUsX7iH4FWxXg6P2c0g3mdl1SYpeGysHJe2vZDN/RM1nw9tXiw==";
 
-            _pdfFilePath = @"C:\Users\Jose Luis\Desktop\REBA sheet.pdf";
+            _pdfFilePath = @"C:\test-pdf.pdf";
             _apiClient = new ApiClient(appId, appSecret);
             _docs = new Documents(_apiClient);
         }
@@ -53,6 +52,18 @@ namespace MifielApiTests
             Document doc = new Document();
             doc.File = _pdfFilePath;
 
+            var signatures = new List<Signature>();
+            signatures.Add(new Signature()
+            { 
+                Email = "ja.zavala.aguilar@gmail.com",
+                TaxId = "ZAAJ8301061E0",
+               SignerName = "Juan Antonio Zavala Aguilar"
+            });
+
+            
+
+            doc.Signatures = signatures;
+            doc.CallbackUrl = "https://requestb.in/xijbbmxi";
             doc = _docs.Save(doc);
             Assert.IsNotNull(doc);
         }
@@ -64,7 +75,9 @@ namespace MifielApiTests
             Document doc = new Document();
             doc.OriginalHash = MifielAPI.Utils.MifielUtils.GetDocumentHash(_pdfFilePath);
             doc.FileName = "PdfFileName";
+            doc.Signatures = new List<Signature>();
 
+            
             doc = _docs.Save(doc);
             Assert.IsNotNull(doc);
         }
