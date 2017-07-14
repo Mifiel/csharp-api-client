@@ -52,6 +52,7 @@
     <Compile Include="Dao\Documents.cs" />
     <Compile Include="Exceptions\MifielException.cs" />
     <Compile Include="Objects\Certificate.cs" />
+    <Compile Include="Objects\CloseDocument.cs" />
     <Compile Include="Objects\Data.cs" />
     <Compile Include="Objects\Document.cs" />
     <Compile Include="Objects\Error.cs" />

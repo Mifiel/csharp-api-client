@@ -44,6 +44,11 @@ namespace MifielAPI
             return SendRequest(Rest.HttpMethod.POST, path, content);
         }
 
+        public HttpContent Post(string path)
+        {
+            return SendRequest(Rest.HttpMethod.POST, path, null);
+        }
+
         public HttpContent Delete(string path)
         {
             return SendRequest(Rest.HttpMethod.DELETE, path, new StringContent(""));
@@ -57,6 +62,7 @@ namespace MifielAPI
         private HttpContent SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
         {
             string requestUri = url + _apiVersion + path;
+            //string requestUri = "https://requestb.in/1cuddmz1";
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
 

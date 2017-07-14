@@ -46,11 +46,22 @@ namespace MifielApiTests
         }
 
         [TestMethod]
+        public void Documents__Close__Should_Success()
+        {
+            SetSandboxUrl();
+            string docId = _docs.FindAll()[0].Id;
+            CloseDocument closeDocument = _docs.Close(docId);
+            Assert.IsTrue(closeDocument.Success);
+        }
+
+        [TestMethod]
         public void Documents__SaveWithFilePath__ShouldReturnADocument()
         {
             SetSandboxUrl();
             Document doc = new Document();
-            doc.File = _pdfFilePath;
+
+
+            doc.File = @"C:\false.pdf";
 
             var signatures = new List<Signature>();
             signatures.Add(new Signature()
@@ -60,10 +71,11 @@ namespace MifielApiTests
                SignerName = "Juan Antonio Zavala Aguilar"
             });
 
-            
 
+            doc.ManualClose = false;
             doc.Signatures = signatures;
-            doc.CallbackUrl = "https://requestb.in/xijbbmxi";
+            doc.CallbackUrl = "https://requestb.in/1cuddmz1";
+            
             doc = _docs.Save(doc);
             Assert.IsNotNull(doc);
         }
@@ -77,7 +89,7 @@ namespace MifielApiTests
             doc.FileName = "PdfFileName";
             doc.Signatures = new List<Signature>();
 
-            
+            doc.ManualClose = false;
             doc = _docs.Save(doc);
             Assert.IsNotNull(doc);
         }

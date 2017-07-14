@@ -28,6 +28,18 @@ namespace MifielAPI.Dao
             return MifielUtils.ConvertJsonToObject<Document>(response);
         }
 
+        public  CloseDocument Close(string id)
+        {
+            var stringBuilder=new StringBuilder(_documentsPath);
+            stringBuilder.Append("/");
+            stringBuilder.Append(id);
+            stringBuilder.Append("/close");
+
+            HttpContent httpResponse = ApiClient.Post(stringBuilder.ToString());
+            string response = httpResponse.ReadAsStringAsync().Result;
+            return MifielUtils.ConvertJsonToObject<CloseDocument>(response);
+        }
+
         public override List<Document> FindAll()
         {
             HttpContent httpResponse = ApiClient.Get(_documentsPath);
@@ -101,6 +113,9 @@ namespace MifielAPI.Dao
                     parameters.Add(new KeyValuePair<string, string>("callback_url", document.CallbackUrl));
                 }
 
+
+                parameters.Add(new KeyValuePair<string, string>("manual_close", document.ManualClose.ToString().ToLower()));
+
                 if (signatures != null)
                 {
                     for (int i = 0; i < signatures.Count; i++)
@@ -126,6 +141,7 @@ namespace MifielAPI.Dao
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("original_hash", originalHash);
                 parameters.Add("name", fileName);
+                parameters.Add("manual_close",document.ManualClose.ToString().ToLower());
 
                 MifielUtils.AppendTextParamToContent(parameters, "callback_url", document.CallbackUrl);
 

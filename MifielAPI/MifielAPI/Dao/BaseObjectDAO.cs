@@ -14,6 +14,6 @@ namespace MifielAPI.Dao
         public abstract T Find(string id);
         public abstract List<T> FindAll();
         public abstract T Save(T objectToSave);
-        public abstract void Delete(string id);
+        public abstract void Delete(string id); 
     }
 }
