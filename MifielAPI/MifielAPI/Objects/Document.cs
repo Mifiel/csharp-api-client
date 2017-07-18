@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace MifielAPI.Objects
@@ -37,5 +38,7 @@ namespace MifielAPI.Objects
         public List<Signature> Signatures { get; set; }
         [JsonProperty("signers")]
         public List<Signer> Signers { get; set; }
+        [JsonProperty("manual_close")]
+        public Boolean? ManualClose { get; set; }
     }
 }
