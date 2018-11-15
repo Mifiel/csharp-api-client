@@ -108,7 +108,7 @@ namespace MifielAPI.Dao
 
                 var parameters =new  List <KeyValuePair<string, string>>();
 
-                if (!String.IsNullOrEmpty(document.CallbackUrl.Trim()))
+                if (!String.IsNullOrEmpty(document.CallbackUrl))
                 {
                     parameters.Add(new KeyValuePair<string, string>("callback_url", document.CallbackUrl));
                 }
