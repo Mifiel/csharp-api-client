@@ -7,15 +7,43 @@ using System.Text.RegularExpressions;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto;
+using MifielAPI.Objects;
 using System.Xml;
 
 namespace MifielAPI.Utils
 {
+
     public static class MifielUtils
     {
         private static Regex _rgx = new Regex("/+$");
         private static SHA256 _sha256 = SHA256.Create();
         private static UTF8Encoding _utfEncoding = new UTF8Encoding();
+        public const string INVALID_PASSWORD = "The password is incorrect. Please try again";
+
+        public static ISigner BuildSignature(SignProperties properties)
+        {
+            try
+            {
+
+                var privateKey = PrivateKeyFactory.DecryptKey(properties.PassPhrase.ToCharArray(), properties.EncriptedPrivateKeyData);
+                var signer = SignerUtilities.GetSigner(properties.Algorithm);
+                signer.Init(true, privateKey);
+
+                return signer;
+            }
+
+            catch (InvalidCipherTextException)
+            {
+                throw new ArgumentException(INVALID_PASSWORD);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
+
+        }
 
         internal static bool IsValidUrl(string url)
         {
@@ -51,13 +79,18 @@ namespace MifielAPI.Utils
             try
             {
                 byte[] contentBytes = _utfEncoding.GetBytes(content);
-                byte[] conetntHash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(contentBytes);
-                return BitConverter.ToString(conetntHash).Replace("-", string.Empty);
+                byte[] contentHash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(contentBytes);
+                return ConvertBytesToHex(contentHash);
             }
             catch (Exception ex)
             {
                 throw new MifielException("Error calculating MD5", ex);
             }
+        }
+
+        internal static string ConvertBytesToHex(Byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace("-", string.Empty).ToLowerInvariant();
         }
 
         internal static void SaveHttpResponseToFile(HttpContent httpResponse, string localPath)

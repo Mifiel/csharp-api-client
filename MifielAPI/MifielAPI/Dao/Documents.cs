@@ -108,6 +108,45 @@ namespace MifielAPI.Dao
             }
         }
 
+        public Document Sign(SignProperties signProperties)
+        {
+            try
+            {
+                signProperties.Build();
+                var signer = MifielUtils.BuildSignature(signProperties);
+
+                var utfEncoding = new UTF8Encoding();
+                var inputData = utfEncoding.GetBytes(signProperties.DocumentOriginalHash);
+                signer.BlockUpdate(inputData, 0, inputData.Length);
+
+                var signatureHex = MifielUtils.ConvertBytesToHex(signer.GenerateSignature());
+
+                var parameters = new Dictionary<string, string>
+                {
+                    { "signature", signatureHex }
+                };
+
+                if (!string.IsNullOrEmpty(signProperties.CertificateId))
+                {
+                    parameters.Add("key", signProperties.CertificateId);
+                }
+                else
+                {
+                    var certificateHex = MifielUtils.ConvertBytesToHex(signProperties.CertificateData);
+                    parameters.Add("certificate", certificateHex);
+                }
+                FormUrlEncodedContent httpContent = new FormUrlEncodedContent(parameters);
+                HttpContent httpResponse = ApiClient.Post(_documentsPath + "/" + signProperties.DocumentId + "/sign", httpContent);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<Document>(response);
+
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
+        }
+
         private HttpContent BuildHttpBody(Document document)
         {
             List<Signature> signatures = document.Signatures;
@@ -130,6 +169,10 @@ namespace MifielAPI.Dao
                     parameters.Add(new KeyValuePair<string, string>("callback_url", document.CallbackUrl));
                 }
 
+                if (!String.IsNullOrEmpty(document.SignCallbackUrl))
+                {
+                    parameters.Add(new KeyValuePair<string, string>("sign_callback_url", document.SignCallbackUrl));
+                }
 
                 parameters.Add(new KeyValuePair<string, string>("manual_close", document.ManualClose.ToString().ToLower()));
 
@@ -142,7 +185,6 @@ namespace MifielAPI.Dao
                         parameters.Add(new KeyValuePair<string, string>("signatories[" + i + "][tax_id]", signatures[i].TaxId));
                     }
                 }
-
 
                 foreach (var keyValuePair in parameters)
                 {
@@ -161,6 +203,7 @@ namespace MifielAPI.Dao
                 parameters.Add("manual_close", document.ManualClose.ToString().ToLower());
 
                 MifielUtils.AppendTextParamToContent(parameters, "callback_url", document.CallbackUrl);
+                MifielUtils.AppendTextParamToContent(parameters, "sign_callback_url", document.SignCallbackUrl);
 
                 if (signatures != null)
                 {

@@ -4,27 +4,135 @@ using NUnit.Framework;
 using MifielAPI;
 using MifielAPI.Objects;
 using MifielAPI.Dao;
+using MifielAPI.Utils;
 
 namespace MifielApiTests
 {
     [TestFixture]
     public class DocumentsTests
     {
+        const string APP_ID = "9fd550a3866164f48516f71bf85a6258cbd07ff3";
+        const string APP_SECRET = "3vIc3r6yJ6PYnssO0S0UYfOqLE70/ulHU76nR/IwHm+zKOa8R+6LuwWeK7HX4vpC7AA8P/ViaixyRJuMb2aftg==";
+
+        const string FISICAL_PRIVATE_KEY_FILE = "carlos_zavala_lopez.key";
+        const string FISICAL_CERTIFICATE_FILE = "carlos_zavala_lopez.cer";
+        const string FILE_PDF = "test-pdf.pdf";
+
         private static ApiClient _apiClient;
         private static Documents _docs;
         private static string _pdfFilePath;
+        private static string _fisicalPrivateKey;
+        private static string _fisicalCertificate;
+        private static SignProperties _signProperties = new SignProperties();
 
         private readonly string _currentDirectory = Path.GetFullPath(TestContext.CurrentContext.TestDirectory);
+        private readonly string _correctPassword = "12345678a";
+        private readonly string _incorrectPassword = "12345678aa";
 
         [SetUp]
         public void SetUp()
         {
-            string appId = "bf8a81b18bffbacf70aa4ac9d5e496a2b7e0e6dd";
-            string appSecret = "hBVLKRTyat56vHcNPVsrSm4ItzmSuMBCrJybLUsX7iH4FWxXg6P2c0g3mdl1SYpeGysHJe2vZDN/RM1nw9tXiw==";
 
-            _pdfFilePath = Path.Combine(_currentDirectory, "test-pdf.pdf");
-            _apiClient = new ApiClient(appId, appSecret);
+            _fisicalPrivateKey = Path.Combine(_currentDirectory, FISICAL_PRIVATE_KEY_FILE);
+            _fisicalCertificate = Path.Combine(_currentDirectory, FISICAL_CERTIFICATE_FILE);
+            _pdfFilePath = Path.Combine(_currentDirectory, FILE_PDF);
+
+            _apiClient = new ApiClient(APP_ID, APP_SECRET);
             _docs = new Documents(_apiClient);
+
+        }
+
+        [Test]
+        public void Documents__Sign__With__Empty__Password__ShouldThrowAnException()
+        {
+            _signProperties = new SignProperties()
+            {
+                PassPhrase = string.Empty
+            };
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.That(exception.Message.Contains(SignProperties.PASSPHRASE_REQUIRE_EXCEPTION));
+        }
+
+        [Test]
+        public void Documents__Sign__Without__EncriptedPrivateKeyData__And__PrivateKeyFullPath__ShouldThrowAnException()
+        {
+            _signProperties = new SignProperties()
+            {
+                PassPhrase = _correctPassword
+            };
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.That(exception.Message.Contains(SignProperties.PRIVATE_KEY_ARGUMENTS_EXCEPTION));
+        }
+
+        [Test]
+        public void Documents__Sign__With__PrivateKeyFullPath__Incorrect__ShouldThrowAnException()
+        {
+            _signProperties = new SignProperties()
+            {
+                PassPhrase = _correctPassword,
+                PrivateKeyFullPath = "fake_path"
+            };
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.IsInstanceOf<FileNotFoundException>(exception.InnerException);
+        }
+
+        [Test]
+        public void Documents__Sign__Without__DocumentId__ShouldThrowAnException()
+        {
+            _signProperties = new SignProperties()
+            {
+                PassPhrase = _correctPassword,
+                PrivateKeyFullPath = Path.Combine(_currentDirectory, _fisicalPrivateKey)
+            };
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.That(exception.Message.Contains(SignProperties.DOCUMENT_ID_REQUIRE_EXCEPTION));
+        }
+
+        [Test]
+        public void Documents__Sign__Without__DocumentOriginalHash__ShouldThrowAnException()
+        {
+            _signProperties = new SignProperties()
+            {
+                PassPhrase = _correctPassword,
+                PrivateKeyFullPath = Path.Combine(_currentDirectory, _fisicalPrivateKey),
+                DocumentId = "SomeId"
+            };
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.That(exception.Message.Contains(SignProperties.DOCUMENT_ORIGINAL_HASH_REQUIRE_EXCEPTION));
+        }
+
+        [Test]
+        public void Documents__Sign__Without__CertificateId__And__CertificateData__ShouldThrowAnException()
+        {
+            _signProperties = new SignProperties()
+            {
+                PassPhrase = _correctPassword,
+                PrivateKeyFullPath = Path.Combine(_currentDirectory, _fisicalPrivateKey),
+                DocumentId = "SomeId",
+                DocumentOriginalHash = "SomeHash"
+            };
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.That(exception.Message.Contains(SignProperties.CERTIFICATE_ARGUMENTS_EXCEPTION));
+        }
+
+        [Test]
+        public void Documents__Sign__Using__Password__Incorrect__ShouldThrowAnException()
+        {
+            _signProperties.PrivateKeyFullPath = _fisicalPrivateKey;
+            _signProperties.PassPhrase = _incorrectPassword;
+            _signProperties.DocumentId = "SomeId";
+            _signProperties.DocumentOriginalHash = "OriginalHash";
+            _signProperties.CertificateFullPath = Path.Combine(_currentDirectory, "carlos_zavala_lopez.cer");
+
+            var exception = Assert.Throws<MifielAPI.Exceptions.MifielException>(() => _docs.Sign(_signProperties));
+            Assert.That(exception.Message.Contains(MifielUtils.INVALID_PASSWORD));
+
         }
 
         [Test]
@@ -37,6 +145,102 @@ namespace MifielApiTests
         public void Documents__CorrectUrl__ShouldNotThrowAnException()
         {
             _apiClient.Url = "https://sandbox.mifiel.com";
+        }
+
+        private Document CreateDocumentForSign()
+        {
+            var document = new Document()
+            {
+                File = Path.Combine(_currentDirectory, _pdfFilePath)
+            };
+
+            var signatures = new List<Signature>(){
+                  new Signature(){
+                      Email = "juan+carlos+zavala+lopez@mifiel.com",
+                      TaxId = "ZACA850805JX8",
+                      SignerName = "Carlos Zavala Lopez"
+                  }
+              };
+
+            document.Signatures = signatures;
+            return _docs.Save(document);
+        }
+
+        [Test]
+        public void Documents__Sign__Using__FisicalKey__And__FisicalCertificate__ShouldReturnADocumentSigned()
+        {
+            SetSandboxUrl();
+            var document = CreateDocumentForSign();
+
+            _signProperties.PrivateKeyFullPath = _fisicalPrivateKey;
+            _signProperties.PassPhrase = _correctPassword;
+            _signProperties.DocumentId = document.Id;
+            _signProperties.DocumentOriginalHash = document.OriginalHash;
+            _signProperties.CertificateFullPath = _fisicalCertificate;
+
+            var documentSigned = _docs.Sign(_signProperties);
+            Assert.True(documentSigned.Signers[0].Signed);
+            Assert.True(documentSigned.Signed);
+            Assert.IsNotNull(documentSigned.SignedAt);
+            Assert.True(documentSigned.SignedByAll);
+        }
+
+        [Test]
+        public void Documents__Sign__Using__EncriptedPrivateKeyData__And__CertificateData__ShouldReturnADocumentSigned()
+        {
+            SetSandboxUrl();
+            var document = CreateDocumentForSign();
+
+            _signProperties.EncriptedPrivateKeyData = File.ReadAllBytes(_fisicalPrivateKey);
+            _signProperties.PassPhrase = _correctPassword;
+            _signProperties.DocumentId = document.Id;
+            _signProperties.DocumentOriginalHash = document.OriginalHash;
+            _signProperties.CertificateData = File.ReadAllBytes(_fisicalCertificate);
+
+            var documentSigned = _docs.Sign(_signProperties);
+            Assert.True(documentSigned.Signers[0].Signed);
+            Assert.True(documentSigned.Signed);
+            Assert.IsNotNull(documentSigned.SignedAt);
+            Assert.True(documentSigned.SignedByAll);
+        }
+
+        [Test]
+        public void Documents__Sign__Using__EncriptedPrivateKeyData__And__CertificateFullPath__ShouldReturnADocumentSigned()
+        {
+            SetSandboxUrl();
+            var document = CreateDocumentForSign();
+
+            _signProperties.EncriptedPrivateKeyData = File.ReadAllBytes(_fisicalPrivateKey);
+            _signProperties.PassPhrase = _correctPassword;
+            _signProperties.DocumentId = document.Id;
+            _signProperties.DocumentOriginalHash = document.OriginalHash;
+            _signProperties.CertificateFullPath = _fisicalCertificate;
+
+            var documentSigned = _docs.Sign(_signProperties);
+            Assert.True(documentSigned.Signers[0].Signed);
+            Assert.True(documentSigned.Signed);
+            Assert.IsNotNull(documentSigned.SignedAt);
+            Assert.True(documentSigned.SignedByAll);
+        }
+
+
+        [Test]
+        public void Documents__Sign__Using__PrivateKeyFullPath__And__CertificateData__ShouldReturnADocumentSigned()
+        {
+            SetSandboxUrl();
+            var document = CreateDocumentForSign();
+
+            _signProperties.PrivateKeyFullPath = _fisicalPrivateKey;
+            _signProperties.PassPhrase = _correctPassword;
+            _signProperties.DocumentId = document.Id;
+            _signProperties.DocumentOriginalHash = document.OriginalHash;
+            _signProperties.CertificateData = File.ReadAllBytes(_fisicalCertificate);
+
+            var documentSigned = _docs.Sign(_signProperties);
+            Assert.True(documentSigned.Signers[0].Signed);
+            Assert.True(documentSigned.Signed);
+            Assert.IsNotNull(documentSigned.SignedAt);
+            Assert.True(documentSigned.SignedByAll);
         }
 
         [Test]
