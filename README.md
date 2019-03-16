@@ -174,3 +174,27 @@ Certificate methods:
     Certificates certificates = new Certificates(apiClient);
     certificates.Delete("id");
   ```
+  
+- Sign
+
+```csharp
+    using MifielAPI.Dao;
+    using MifielAPI.Objects;
+    
+    SignProperties signProperties = new SignProperties(); // MifielAPI.Objects;
+    //The library accepts either the path of the file (PrivateKeyFullPath) or its bytes (EncriptedPrivateKeyData)
+    signProperties.PrivateKeyFullPath = 'path/to/my-private-key.key';
+    signProperties.EncriptedPrivateKeyData = File.ReadAllBytes('path/to/my-private-key.key');
+
+    signProperties.PassPhrase = 'my-password-privateKey';
+    signProperties.DocumentId = document.Id;
+    signProperties.DocumentOriginalHash = document.OriginalHash;
+
+    //The library accepts either the path of the file (CertificateFullPath) or its bytes (CertificateData)
+    signProperties.CertificateFullPath = 'path/to/my-certificate.cer';
+    signProperties.CertificateData = File.ReadAllBytes('path/to/my-certificate.cer');
+
+    Documents document = new Documents(apiClient); //MifielAPI.Dao.Document;
+    document.sign(signProperties); //the result will be MifielAPI.Objects.Document;
+    
+  ```
