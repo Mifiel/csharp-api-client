@@ -122,7 +122,6 @@ namespace MifielAPI.Dao
                 HttpContent httpResponse = ApiClient.Post(_documentsPath + "/" + signProperties.DocumentId + "/sign", httpContent);
                 string response = httpResponse.ReadAsStringAsync().Result;
                 return MifielUtils.ConvertJsonToObject<Document>(response);
-
             }
             catch (Exception ex)
             {
