@@ -34,33 +34,55 @@ namespace MifielAPI.Dao
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new MifielException(ex.Message, ex);
             }
         }
 
         public override List<Template> FindAll()
         {
-            HttpContent httpResponse = ApiClient.Get(TEMPLATES_PATH);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<List<Template>>(response);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(TEMPLATES_PATH);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<List<Template>>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
+
         }
 
         public List<TemplateFields> GetFields(string templateId)
         {
-            var url = TEMPLATES_PATH + "/" + templateId + "/" + FIELDS;
+            try
+            {
+                var url = TEMPLATES_PATH + "/" + templateId + "/" + FIELDS;
 
-            HttpContent httpResponse = ApiClient.Get(url);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<List<TemplateFields>>(response);
+                HttpContent httpResponse = ApiClient.Get(url);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<List<TemplateFields>>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public List<TemplateDocuments> GetDocuments(string templateId)
         {
-            var url = TEMPLATES_PATH + "/" + templateId + "/" + DOCUMENTS;
+            try
+            {
+                var url = TEMPLATES_PATH + "/" + templateId + "/" + DOCUMENTS;
 
-            HttpContent httpResponse = ApiClient.Get(url);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<List<TemplateDocuments>>(response);
+                HttpContent httpResponse = ApiClient.Get(url);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<List<TemplateDocuments>>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public SimpleResponse GenerateSeveralDocuments(TemplateGenerateDocuments generateDocuments)
@@ -81,10 +103,17 @@ namespace MifielAPI.Dao
 
         public override Template Save(Template template)
         {
-            HttpContent httpContent = BuildHttpBody(template);
-            HttpContent httpResponse = ApiClient.Post(TEMPLATES_PATH, httpContent);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<Template>(response);
+            try
+            {
+                HttpContent httpContent = BuildHttpBody(template);
+                HttpContent httpResponse = ApiClient.Post(TEMPLATES_PATH, httpContent);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<Template>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public Document GenerateDocument(TemplateGenerateDocument generateDocument)

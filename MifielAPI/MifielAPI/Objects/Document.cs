@@ -24,6 +24,8 @@ namespace MifielAPI.Objects
         public Owner Owner { get; set; }
         [JsonProperty("callback_url")]
         public string CallbackUrl { get; set; }
+        [JsonProperty("sign_callback_url")]
+        public string SignCallbackUrl { get; set; }
         [JsonProperty("file")]
         public string File { get; set; }
         [JsonProperty("file_download")]

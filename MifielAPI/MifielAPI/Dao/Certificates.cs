@@ -1,5 +1,7 @@
-﻿using MifielAPI.Objects;
+﻿using MifielAPI.Exceptions;
+using MifielAPI.Objects;
 using MifielAPI.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -16,40 +18,69 @@ namespace MifielAPI.Dao
 
         public override void Delete(string id)
         {
-            ApiClient.Delete(_certificatesPath + "/" + id);
+            try
+            {
+                ApiClient.Delete(_certificatesPath + "/" + id);
+
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public override Certificate Find(string id)
         {
-            HttpContent httpResponse = ApiClient.Get(_certificatesPath + "/" + id);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<Certificate>(response);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_certificatesPath + "/" + id);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<Certificate>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public override List<Certificate> FindAll()
         {
-            HttpContent httpResponse = ApiClient.Get(_certificatesPath);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<List<Certificate>>(response);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_certificatesPath);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<List<Certificate>>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public override Certificate Save(Certificate certificate)
         {
-            if (string.IsNullOrEmpty(certificate.Id))
+            try
             {
-                HttpContent httpContent = BuildHttpBody(certificate);
-                HttpContent httpResponse = ApiClient.Post(_certificatesPath, httpContent);
-                string response = httpResponse.ReadAsStringAsync().Result;
-                return MifielUtils.ConvertJsonToObject<Certificate>(response);
+                if (string.IsNullOrEmpty(certificate.Id))
+                {
+                    HttpContent httpContent = BuildHttpBody(certificate);
+                    HttpContent httpResponse = ApiClient.Post(_certificatesPath, httpContent);
+                    string response = httpResponse.ReadAsStringAsync().Result;
+                    return MifielUtils.ConvertJsonToObject<Certificate>(response);
+                }
+                else
+                {
+                    string json = MifielUtils.ConvertObjectToJson(certificate);
+                    HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpContent httpResponse = ApiClient.Put(_certificatesPath, httpContent);
+                    string response = httpResponse.ReadAsStringAsync().Result;
+                    return MifielUtils.ConvertJsonToObject<Certificate>(response);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string json = MifielUtils.ConvertObjectToJson(certificate);
-                HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpContent httpResponse = ApiClient.Put(_certificatesPath, httpContent);
-                string response = httpResponse.ReadAsStringAsync().Result;
-                return MifielUtils.ConvertJsonToObject<Certificate>(response);
-            }            
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         private HttpContent BuildHttpBody(Certificate certificate)
