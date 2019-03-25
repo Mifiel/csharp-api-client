@@ -80,6 +80,14 @@ Through Mifiel’s API, you can easily manage documents and certificates within 
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rest\HttpMethod.cs" />
     <Compile Include="Utils\MifielUtils.cs" />
+    <Compile Include="Dao\Templates.cs" />
+    <Compile Include="Objects\Template.cs" />
+    <Compile Include="Objects\TemplateGenerateDocument.cs" />
+    <Compile Include="Objects\TemplateFields.cs" />
+    <Compile Include="Objects\TemplateDocuments.cs" />
+    <Compile Include="Objects\TemplateGenerateDocuments.cs" />
+    <Compile Include="Objects\TemplateDocumentsData.cs" />
+    <Compile Include="Objects\SimpleResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

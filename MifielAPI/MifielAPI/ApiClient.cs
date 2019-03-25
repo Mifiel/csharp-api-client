@@ -49,6 +49,11 @@ namespace MifielAPI
             return SendRequest(Rest.HttpMethod.POST, path, null);
         }
 
+        public HttpContent Post(string path, StringContent content)
+        {
+            return SendRequest(Rest.HttpMethod.POST, path, content);
+        }
+
         public HttpContent Delete(string path)
         {
             return SendRequest(Rest.HttpMethod.DELETE, path, new StringContent(""));
@@ -58,11 +63,10 @@ namespace MifielAPI
         {
             return SendRequest(Rest.HttpMethod.PUT, path, content);
         }
-        
+
         private HttpContent SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
         {
             string requestUri = url + _apiVersion + path;
-            //string requestUri = "https://requestb.in/1cuddmz1";
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
 
@@ -91,11 +95,11 @@ namespace MifielAPI
                     }
 
                     SetAuthentication(httpMethod, path, requestMessage);
-                    
+
                     httpResponse = client.SendAsync(requestMessage).Result;
 
                     if (!httpResponse.IsSuccessStatusCode)
-                        throw new MifielException("Status code error: " + httpResponse.StatusCode, 
+                        throw new MifielException("Status code error: " + httpResponse.StatusCode,
                                                     httpResponse.Content.ReadAsStringAsync().Result);
 
                     return httpResponse.Content;
