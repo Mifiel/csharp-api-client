@@ -18,76 +18,132 @@ namespace MifielAPI.Dao
 
         public override void Delete(string id)
         {
-            ApiClient.Delete(_documentsPath + "/" + id);
+            try
+            {
+                ApiClient.Delete(_documentsPath + "/" + id);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public override Document Find(string id)
         {
-            HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<Document>(response);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<Document>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public CloseDocument Close(string id)
         {
-            var stringBuilder = new StringBuilder(_documentsPath);
-            stringBuilder.Append("/");
-            stringBuilder.Append(id);
-            stringBuilder.Append("/close");
+            try
+            {
+                var stringBuilder = new StringBuilder(_documentsPath);
+                stringBuilder.Append("/");
+                stringBuilder.Append(id);
+                stringBuilder.Append("/close");
 
-            HttpContent httpResponse = ApiClient.Post(stringBuilder.ToString());
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<CloseDocument>(response);
+                HttpContent httpResponse = ApiClient.Post(stringBuilder.ToString());
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<CloseDocument>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public override List<Document> FindAll()
         {
-            HttpContent httpResponse = ApiClient.Get(_documentsPath);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<List<Document>>(response);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_documentsPath);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<List<Document>>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public void SaveFile(string id, string localPath)
         {
-            HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id + "/file");
-            MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id + "/file");
+                MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
 
         public void SaveXml(string id, string localPath)
         {
-            HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id + "/xml");
-            MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id + "/xml");
+                MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public SignatureResponse RequestSignature(string id, string email, string cc)
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("email", email);
-            parameters.Add("cc", cc);
+            try
+            {
+                Dictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("email", email);
+                parameters.Add("cc", cc);
 
-            FormUrlEncodedContent httpContent = new FormUrlEncodedContent(parameters);
-            HttpContent httpResponse = ApiClient.Post(_documentsPath + "/" + id + "/request_signature", httpContent);
-            string response = httpResponse.ReadAsStringAsync().Result;
-            return MifielUtils.ConvertJsonToObject<SignatureResponse>(response);
+                FormUrlEncodedContent httpContent = new FormUrlEncodedContent(parameters);
+                HttpContent httpResponse = ApiClient.Post(_documentsPath + "/" + id + "/request_signature", httpContent);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<SignatureResponse>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public override Document Save(Document document)
         {
-            if (string.IsNullOrEmpty(document.Id))
+            try
             {
-                HttpContent httpContent = BuildHttpBody(document);
-                HttpContent httpResponse = ApiClient.Post(_documentsPath, httpContent);
-                string response = httpResponse.ReadAsStringAsync().Result;
-                return MifielUtils.ConvertJsonToObject<Document>(response);
+                if (string.IsNullOrEmpty(document.Id))
+                {
+                    HttpContent httpContent = BuildHttpBody(document);
+                    HttpContent httpResponse = ApiClient.Post(_documentsPath, httpContent);
+                    string response = httpResponse.ReadAsStringAsync().Result;
+                    return MifielUtils.ConvertJsonToObject<Document>(response);
+                }
+                else
+                {
+                    string json = MifielUtils.ConvertObjectToJson(document);
+                    HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpContent httpResponse = ApiClient.Put(_documentsPath, httpContent);
+                    string response = httpResponse.ReadAsStringAsync().Result;
+                    return MifielUtils.ConvertJsonToObject<Document>(response);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string json = MifielUtils.ConvertObjectToJson(document);
-                HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpContent httpResponse = ApiClient.Put(_documentsPath, httpContent);
-                string response = httpResponse.ReadAsStringAsync().Result;
-                return MifielUtils.ConvertJsonToObject<Document>(response);
+                throw new MifielException(ex.Message, ex);
             }
         }
 
@@ -120,6 +176,21 @@ namespace MifielAPI.Dao
                 }
                 FormUrlEncodedContent httpContent = new FormUrlEncodedContent(parameters);
                 HttpContent httpResponse = ApiClient.Post(_documentsPath + "/" + signProperties.DocumentId + "/sign", httpContent);
+                string response = httpResponse.ReadAsStringAsync().Result;
+                return MifielUtils.ConvertJsonToObject<Document>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
+        }
+
+        public Document GetStatus(string id)
+        {
+            try
+            {
+                var uri = _documentsPath + "/" + id + "/status";
+                HttpContent httpResponse = ApiClient.Get(uri);
                 string response = httpResponse.ReadAsStringAsync().Result;
                 return MifielUtils.ConvertJsonToObject<Document>(response);
             }

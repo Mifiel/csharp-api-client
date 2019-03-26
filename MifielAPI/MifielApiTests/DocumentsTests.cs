@@ -43,6 +43,38 @@ namespace MifielApiTests
         }
 
         [Test]
+        public void Documents__GetStatus__When__Unsigned__ShouldReturnUnsignedStatus()
+        {
+            SetSandboxUrl();
+            var document = CreateDocumentForSign();
+            document = _docs.GetStatus(document.Id);
+            Assert.NotNull(document);
+            Assert.IsFalse(document.Signed);
+        }
+
+        [Test]
+        public void Documents__GetStatus__When__Signed__ShouldReturnSignedStatus()
+        {
+            SetSandboxUrl();
+            var document = CreateDocumentForSign();
+            document = _docs.GetStatus(document.Id);
+            Assert.NotNull(document);
+            Assert.IsFalse(document.Signed);
+
+            _signProperties.PrivateKeyFullPath = _fisicalPrivateKey;
+            _signProperties.PassPhrase = _correctPassword;
+            _signProperties.DocumentId = document.Id;
+            _signProperties.DocumentOriginalHash = document.OriginalHash;
+            _signProperties.CertificateFullPath = _fisicalCertificate;
+
+            var documentSigned = _docs.Sign(_signProperties);
+            Assert.IsTrue(documentSigned.Signed);
+
+            document = _docs.GetStatus(document.Id); 
+            Assert.IsTrue(document.Signed);
+        }
+
+        [Test]
         public void Documents__Sign__With__Empty__Password__ShouldThrowAnException()
         {
             _signProperties = new SignProperties()
