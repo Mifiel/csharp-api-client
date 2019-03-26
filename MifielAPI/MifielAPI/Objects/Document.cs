@@ -42,5 +42,11 @@ namespace MifielAPI.Objects
         public List<Signer> Signers { get; set; }
         [JsonProperty("manual_close")]
         public Boolean? ManualClose { get; set; }
+        [JsonProperty("ready_to_download")]
+        public Boolean? ReadyToDownload { get; set; }
+        [JsonProperty("conservancy_record_issued_at")]
+        public string ConservancyRecordIssuedAt { get; set; }
+        [JsonProperty("callback_url_count")]
+        public Int32 CallbackUrlCount { get; set; }
     }
 }

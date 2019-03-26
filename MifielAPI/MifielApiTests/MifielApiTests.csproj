@@ -46,9 +46,6 @@
     <None Include="carlos_zavala_lopez.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="carlos_zavala_lopez.key">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="company.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -56,6 +53,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="test-pdf.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="carlos_zavala_lopez.key">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="file_hash.xml">

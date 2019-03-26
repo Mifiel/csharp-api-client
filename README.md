@@ -125,6 +125,17 @@ Document methods:
     Documents documents = new Documents(apiClient);
     documents.Delete("id");
   ```
+- GetStatus
+
+  ```csharp
+    using MifielAPI.Dao;
+    using MifielAPI.Objects;
+    
+    Documents documents = new Documents(apiClient);
+    Document document = documents.GetStatus("documentId");
+    //document.ReadyToDownload -> Indicates if the document is already signed and has conservancy record
+    //document.ConservancyRecordIssuedAt -> Indicates date from conservancy record
+  ```
 
 Certificate methods:
 

@@ -24,7 +24,6 @@
     <Description>Mifiel provide a simple and robust RESTful API enabling any service or company operating in México to integrate electronic signatures (using the FIEL) into their workflow.
 
 Through Mifiel's Api, you can easily manage documents and cerificates within your Mifiel account</Description>
-    <ReleaseVersion>1.0.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
