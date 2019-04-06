@@ -65,7 +65,7 @@ namespace MifielAPI.Utils
                 using (FileStream stream = File.OpenRead(path))
                 {
                     byte[] hashValue = _sha256.ComputeHash(stream);
-                    return BitConverter.ToString(hashValue).Replace("-", string.Empty);
+                    return BitConverter.ToString(hashValue).Replace("-", string.Empty).ToLower();
                 }
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace MifielAPI.Utils
 
         internal static string ConvertBytesToHex(Byte[] bytes)
         {
-            return BitConverter.ToString(bytes).Replace("-", string.Empty).ToLowerInvariant();
+            return BitConverter.ToString(bytes).Replace("-", string.Empty).ToLower();
         }
 
         internal static void SaveHttpResponseToFile(HttpContent httpResponse, string localPath)

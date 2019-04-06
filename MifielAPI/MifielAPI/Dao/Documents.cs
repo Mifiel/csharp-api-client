@@ -151,7 +151,7 @@ namespace MifielAPI.Dao
                 var signer = MifielUtils.BuildSignature(signProperties);
 
                 var utfEncoding = new UTF8Encoding();
-                var inputData = utfEncoding.GetBytes(signProperties.DocumentOriginalHash);
+                var inputData = utfEncoding.GetBytes(signProperties.DocumentOriginalHash.ToLower());
                 signer.BlockUpdate(inputData, 0, inputData.Length);
 
                 var signatureHex = MifielUtils.ConvertBytesToHex(signer.GenerateSignature());
@@ -189,6 +189,19 @@ namespace MifielAPI.Dao
                 HttpContent httpResponse = ApiClient.Get(uri);
                 string response = httpResponse.ReadAsStringAsync().Result;
                 return MifielUtils.ConvertJsonToObject<Document>(response);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
+        }
+
+        public void SaveFileSigned(string id, string localPath)
+        {
+            try
+            {
+                HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id + "/file_signed");
+                MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
             }
             catch (Exception ex)
             {
