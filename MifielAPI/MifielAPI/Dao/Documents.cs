@@ -7,6 +7,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Xml;
 
 namespace MifielAPI.Dao
 {
@@ -28,9 +29,9 @@ namespace MifielAPI.Dao
             return MifielUtils.ConvertJsonToObject<Document>(response);
         }
 
-        public  CloseDocument Close(string id)
+        public CloseDocument Close(string id)
         {
-            var stringBuilder=new StringBuilder(_documentsPath);
+            var stringBuilder = new StringBuilder(_documentsPath);
             stringBuilder.Append("/");
             stringBuilder.Append(id);
             stringBuilder.Append("/close");
@@ -82,20 +83,27 @@ namespace MifielAPI.Dao
 
         public override Document Save(Document document)
         {
-            if (string.IsNullOrEmpty(document.Id))
+            try
             {
-                HttpContent httpContent = BuildHttpBody(document);
-                HttpContent httpResponse = ApiClient.Post(_documentsPath, httpContent);
-                string response = httpResponse.ReadAsStringAsync().Result;
-                return MifielUtils.ConvertJsonToObject<Document>(response);
+                if (string.IsNullOrEmpty(document.Id))
+                {
+                    HttpContent httpContent = BuildHttpBody(document);
+                    HttpContent httpResponse = ApiClient.Post(_documentsPath, httpContent);
+                    string response = httpResponse.ReadAsStringAsync().Result;
+                    return MifielUtils.ConvertJsonToObject<Document>(response);
+                }
+                else
+                {
+                    string json = MifielUtils.ConvertObjectToJson(document);
+                    HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpContent httpResponse = ApiClient.Put(_documentsPath, httpContent);
+                    string response = httpResponse.ReadAsStringAsync().Result;
+                    return MifielUtils.ConvertJsonToObject<Document>(response);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string json = MifielUtils.ConvertObjectToJson(document);
-                HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpContent httpResponse = ApiClient.Put(_documentsPath, httpContent);
-                string response = httpResponse.ReadAsStringAsync().Result;
-                return MifielUtils.ConvertJsonToObject<Document>(response);
+                throw new MifielException(ex.Message, ex);
             }
         }
 
@@ -114,7 +122,7 @@ namespace MifielAPI.Dao
 
                 multipartContent.Add(pdfContent, "file", Path.GetFileName(filePath));
 
-                var parameters =new  List <KeyValuePair<string, string>>();
+                var parameters = new List<KeyValuePair<string, string>>();
 
                 if (!String.IsNullOrEmpty(document.CallbackUrl))
                 {
@@ -149,7 +157,7 @@ namespace MifielAPI.Dao
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("original_hash", originalHash);
                 parameters.Add("name", fileName);
-                parameters.Add("manual_close",document.ManualClose.ToString().ToLower());
+                parameters.Add("manual_close", document.ManualClose.ToString().ToLower());
 
                 MifielUtils.AppendTextParamToContent(parameters, "callback_url", document.CallbackUrl);
 
