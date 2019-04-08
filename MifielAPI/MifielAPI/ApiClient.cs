@@ -62,12 +62,12 @@ namespace MifielAPI
         private HttpContent SendRequest(Rest.HttpMethod httpMethod, string path, HttpContent content)
         {
             string requestUri = url + _apiVersion + path;
-            //string requestUri = "https://requestb.in/1cuddmz1";
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
 
             using (var client = new HttpClient())
             {
+                client.Timeout = TimeSpan.FromMinutes(5);
                 using (content)
                 {
                     switch (httpMethod)
