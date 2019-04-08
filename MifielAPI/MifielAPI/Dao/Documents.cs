@@ -50,20 +50,21 @@ namespace MifielAPI.Dao
 
         public void SaveFile(string id, string localPath)
         {
-             SaveFile(id,localPath,SaveFileEndPointEnum.FILE);
+            SaveFile(id, localPath, SaveFileEndPointEnum.FILE);
         }
 
         public void SaveXml(string id, string localPath)
         {
-          SaveFile(id,localPath,SaveFileEndPointEnum.XML);
+            SaveFile(id, localPath, SaveFileEndPointEnum.XML);
         }
 
         public void SaveFileSigned(string id, string localPath)
         {
-            SaveFile(id,localPath,SaveFileEndPointEnum.FILE_SIGNED);
+            SaveFile(id, localPath, SaveFileEndPointEnum.FILE_SIGNED);
         }
 
-        private void SaveFile(string id, string localPath, SaveFileEndPointEnum saveFileEndPoint){
+        private void SaveFile(string id, string localPath, SaveFileEndPointEnum saveFileEndPoint)
+        {
             String uri = _documentsPath + "/" + id + "/" + saveFileEndPoint.ToString().ToLower();
             HttpContent httpResponse = ApiClient.Get(uri);
             MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
