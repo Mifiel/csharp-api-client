@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace MifielAPI.Utils
 {
@@ -123,6 +124,27 @@ namespace MifielAPI.Utils
             catch (Exception e)
             {
                 throw new MifielException("Error converting Object to JSON", e);
+            }
+        }
+
+        public static void AppendPDFBase64InOriginalXml(string pathPDF, string pathOriginalXml, string pathNewXml)
+        {
+            try
+            {
+                var xml = new XmlDocument();
+                xml.Load(pathOriginalXml);
+
+                var nodes = xml.GetElementsByTagName("file");
+
+                var bytes = File.ReadAllBytes(pathPDF);
+                var content = Convert.ToBase64String(bytes, Base64FormattingOptions.InsertLineBreaks);
+                nodes[0].InnerText = content;
+
+                xml.Save(pathNewXml);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
             }
         }
     }

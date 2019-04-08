@@ -19,7 +19,7 @@ Then you can configure the library with:
 
 ```csharp
   using MifielAPI;
-  
+
   ApiClient apiClient = new ApiClient(appId, appSecret);
   // if you want to use our sandbox environment use:
   apiClient.Url = "https://sandbox.mifiel.com";
@@ -32,7 +32,7 @@ Document methods:
   ```csharp
     using MifielAPI.Dao;
     using MifielAPI.Objects;
-    
+
     Documents documents = new Documents(apiClient);
     Document document = documents.Find("id");
     document.OriginalHash;
@@ -47,7 +47,7 @@ Document methods:
     using MifielAPI.Dao;
     using MifielAPI.Objects;
     using System.Collections.Generic;
-    
+
     Documents documents = new Documents(apiClient);
     List<Document> allDocuments = documents.FindAll();
   ```
@@ -62,7 +62,7 @@ Document methods:
     using MifielAPI.Objects;
     using MifielAPI.Utils;
     using System.Collections.Generic;
-    
+
     Documents documents = new Documents(_apiClient);
     Document document = new Document()
     {
@@ -83,12 +83,12 @@ Document methods:
         }
       }
     };
-    
+
     documents.Save(document);
-    
-    // if you dont want us to have the PDF, you can just send us 
+
+    // if you dont want us to have the PDF, you can just send us
     // the original_hash and the name of the document. Both are required
-    Document document2 = new Document() 
+    Document document2 = new Document()
     {
       OriginalHash = MifielUtils.GetDocumentHash("path/to/my-file.pdf"),
       Signatures = ...
@@ -102,14 +102,18 @@ Document methods:
 ```csharp
   using MifielAPI.Dao;
   using MifielAPI.Objects;
-  
+  using MifielAPI.Utils;
+
   Documents documents = new Documents(apiClient);
   Document document = documents.Find("id");
-  
+
   //save the original file
   documents.SaveFile(document.Id, "path/to/save/file.pdf");
   //save the signed xml file
   documents.SaveXml(document.Id, "path/to/save/xml.xml");
+
+  //append pdf base64 in original xml (when document was created using the hash)
+  MifielUtils.AppendPDFBase64InOriginalXml("path/to/file.pdf", "path/to/originalXml", "path/to/newXml");
 ```
 
 - Delete
@@ -117,7 +121,7 @@ Document methods:
   ```csharp
     using MifielAPI.Dao;
     using MifielAPI.Objects;
-    
+
     Documents documents = new Documents(apiClient);
     documents.Delete("id");
   ```
@@ -129,7 +133,7 @@ Certificate methods:
   ```csharp
     using MifielAPI.Dao;
     using MifielAPI.Objects;
-    
+
     Certificates certificates = new Certificates(apiClient);
     Certificate certificate = certificates.Find("id");
     certificate.CerHex;
@@ -143,21 +147,21 @@ Certificate methods:
     using MifielAPI.Dao;
     using MifielAPI.Objects;
     using System.Collections.Generic;
-    
+
     Certificates certificates = new Certificates(apiClient);
     List<Certificate> allCertificates = certificates.FindAll();
   ```
 
 - Create
-  
+
   ```csharp
     using MifielAPI.Dao;
     using MifielAPI.Objects;
-    
+
     Certificates certificates = new Certificates(apiClient);
     Certificate certificate = new Certificate();
     certificate.File = "path/to/my-certificate.cer";
-    
+
     certificates.Save(certificate);
   ```
 
@@ -166,7 +170,7 @@ Certificate methods:
   ```csharp
     using MifielAPI.Dao;
     using MifielAPI.Objects;
-    
+
     Certificates certificates = new Certificates(apiClient);
     certificates.Delete("id");
   ```

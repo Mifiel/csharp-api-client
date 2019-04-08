@@ -62,7 +62,7 @@ namespace MifielApiTests
             SetSandboxUrl();
             var document = new Document()
             {
-                File = Path.Combine(_currentDirectory,_pdfFilePath),
+                File = Path.Combine(_currentDirectory, _pdfFilePath),
                 ManualClose = false,
                 CallbackUrl = "https://requestb.in/1cuddmz1"
             };
@@ -78,6 +78,15 @@ namespace MifielApiTests
             document.Signatures = signatures;
             document = _docs.Save(document);
             Assert.IsNotNull(document);
+        }
+
+        [Test]
+        public void Documents__AppendPDFBase64InOriginalXml__ShouldGenerateNewXML()
+        {
+            var pathOriginalXml = Path.Combine(_currentDirectory, "file_hash.xml");
+            var pathNewXml = Path.Combine(_currentDirectory, "file_with_hash_and_document.xml");
+            MifielAPI.Utils.MifielUtils.AppendPDFBase64InOriginalXml(_pdfFilePath, pathOriginalXml, pathNewXml);
+            Assert.True(File.Exists(pathNewXml));
         }
 
         [Test]
@@ -161,7 +170,7 @@ namespace MifielApiTests
 
             document = _docs.Save(document);
 
-            _docs.SaveFile(document.Id, Path.Combine(_currentDirectory,"pdf_save_test.pdf"));
+            _docs.SaveFile(document.Id, Path.Combine(_currentDirectory, "pdf_save_test.pdf"));
         }
 
         private void SetSandboxUrl()
