@@ -93,9 +93,16 @@ namespace MifielAPI.Dao
 
         private void SaveFile(string id, string localPath, SaveFileEndPointEnum saveFileEndPoint)
         {
-            String uri = _documentsPath + "/" + id + "/" + saveFileEndPoint.ToString().ToLower();
-            HttpContent httpResponse = ApiClient.Get(uri);
-            MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
+            try
+            {
+                var uri = _documentsPath + "/" + id + "/" + saveFileEndPoint.ToString().ToLower();
+                HttpContent httpResponse = ApiClient.Get(uri);
+                MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
+            }
+            catch (Exception ex)
+            {
+                throw new MifielException(ex.Message, ex);
+            }
         }
 
         public SignatureResponse RequestSignature(string id, string email, string cc)
@@ -189,19 +196,6 @@ namespace MifielAPI.Dao
                 HttpContent httpResponse = ApiClient.Get(uri);
                 string response = httpResponse.ReadAsStringAsync().Result;
                 return MifielUtils.ConvertJsonToObject<Document>(response);
-            }
-            catch (Exception ex)
-            {
-                throw new MifielException(ex.Message, ex);
-            }
-        }
-
-        public void SaveFileSigned(string id, string localPath)
-        {
-            try
-            {
-                HttpContent httpResponse = ApiClient.Get(_documentsPath + "/" + id + "/file_signed");
-                MifielUtils.SaveHttpResponseToFile(httpResponse, localPath);
             }
             catch (Exception ex)
             {
