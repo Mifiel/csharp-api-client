@@ -137,7 +137,7 @@ namespace MifielAPI.Utils
                 var nodes = xml.GetElementsByTagName("file");
 
                 var bytes = File.ReadAllBytes(pathPDF);
-                var content = Convert.ToBase64String(bytes);
+                var content = Convert.ToBase64String(bytes, Base64FormattingOptions.InsertLineBreaks);
                 nodes[0].InnerText = content;
 
                 xml.Save(pathNewXml);
