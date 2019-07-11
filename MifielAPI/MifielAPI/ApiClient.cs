@@ -64,6 +64,7 @@ namespace MifielAPI
             string requestUri = url + _apiVersion + path;
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
             using (var client = new HttpClient())
             {
