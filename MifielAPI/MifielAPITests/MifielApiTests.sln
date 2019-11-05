@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MifielApiTests", "MifielApiTests.csproj", "{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

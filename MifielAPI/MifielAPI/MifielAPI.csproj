@@ -84,6 +84,7 @@ Through Mifiel’s API, you can easily manage documents and certificates within 
     <Compile Include="Rest\HttpMethod.cs" />
     <Compile Include="Utils\SaveFileEndPointEnum.cs" />
     <Compile Include="Utils\MifielUtils.cs" />
+    <Compile Include="Objects\Viewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
