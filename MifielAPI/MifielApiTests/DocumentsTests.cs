@@ -10,6 +10,8 @@ namespace MifielApiTests
     [TestFixture]
     public class DocumentsTests
     {
+        const string APP_ID = "7c938f8e2ff2f083d454127bffd7d4c8bc2c2dee";
+        const string APP_SECRET = "1lXeVVMbNe5IH+INgMeQX463fsixeWEMMSLS4WXPwxpR9RwStD3iE4XaNMXbY8YigIxCQP9gb/8xZI3XILN2Rw==";
         private static ApiClient _apiClient;
         private static Documents _docs;
         private static string _pdfFilePath;
@@ -18,12 +20,9 @@ namespace MifielApiTests
 
         [SetUp]
         public void SetUp()
-        {
-            string appId = "bf8a81b18bffbacf70aa4ac9d5e496a2b7e0e6dd";
-            string appSecret = "hBVLKRTyat56vHcNPVsrSm4ItzmSuMBCrJybLUsX7iH4FWxXg6P2c0g3mdl1SYpeGysHJe2vZDN/RM1nw9tXiw==";
-
+        { 
             _pdfFilePath = Path.Combine(_currentDirectory, "test-pdf.pdf");
-            _apiClient = new ApiClient(appId, appSecret);
+            _apiClient = new ApiClient(APP_ID, APP_SECRET);
             _docs = new Documents(_apiClient);
         }
 
@@ -69,13 +68,23 @@ namespace MifielApiTests
 
             var signatures = new List<Signature>(){
                 new Signature(){
-                    Email = "ja.zavala.aguilar@gmail.com",
+                    Email = "juan@mifiel.com",
                     TaxId = "ZAAJ8301061E0",
                     SignerName = "Juan Antonio Zavala Aguilar"
                 }
             };
 
+            var viewers = new List<Viewer>() {
+                new Viewer(){
+                    Name = "Juan Zavala",
+                    Email = "ja.zavala.aguilar@gmail.com"
+                }
+            };
+
+            document.SendMail = true;
+            document.SendInvites = true;
             document.Signatures = signatures;
+            document.Viewers = viewers;
             document = _docs.Save(document);
             Assert.IsNotNull(document);
         }
@@ -97,9 +106,26 @@ namespace MifielApiTests
             {
                 OriginalHash = MifielAPI.Utils.MifielUtils.GetDocumentHash(_pdfFilePath),
                 FileName = "PdfFileName",
-                Signatures = new List<Signature>(),
-                ManualClose = false
+                ManualClose = false,
             };
+
+            var signatures = new List<Signature>(){
+                new Signature(){
+                    Email = "juan@mifiel.com",
+                    SignerName = "Juan Antonio Zavala Aguilar"
+                }
+            };
+
+            var viewers = new List<Viewer>() {
+                new Viewer(){
+                    Name = "Juan Zavala",
+                    Email = "ja.zavala.aguilar@gmail.com"
+                }
+            };
+
+            document.Signatures = signatures;
+            document.Viewers = viewers;
+
             document = _docs.Save(document);
             Assert.IsNotNull(document);
         }

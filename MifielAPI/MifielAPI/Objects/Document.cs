@@ -6,6 +6,11 @@ namespace MifielAPI.Objects
 {
     public class Document
     { 
+        public Document() {
+            Signatures = new List<Signature>();
+            Viewers = new List<Viewer>();
+        }
+
         [JsonProperty("id")]
         public string Id { get; set; }
         [JsonProperty("original_hash")]
@@ -40,5 +45,11 @@ namespace MifielAPI.Objects
         public List<Signer> Signers { get; set; }
         [JsonProperty("manual_close")]
         public Boolean? ManualClose { get; set; }
+        [JsonProperty("send_mail")]
+        public Boolean? SendMail { get; set; }
+        [JsonProperty("send_invites")]
+        public Boolean? SendInvites { get; set; }
+        [JsonProperty("viewers")]
+        public List<Viewer> Viewers { get; set; }
     }
 }
