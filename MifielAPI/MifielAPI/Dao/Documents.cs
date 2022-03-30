@@ -118,6 +118,7 @@ namespace MifielAPI.Dao
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             MifielUtils.AppendTextParamToContent(parameters, "callback_url", document.CallbackUrl);
+            MifielUtils.AppendTextParamToContent(parameters, "sign_callback_url", document.SignCallbackUrl);
             MifielUtils.AppendTextParamToContent(parameters, "manual_close", document.ManualClose.ToString().ToLower());
             MifielUtils.AppendTextParamToContent(parameters, "send_mail", document.SendMail.ToString().ToLower());
             MifielUtils.AppendTextParamToContent(parameters, "send_invites", document.SendInvites.ToString().ToLower());
