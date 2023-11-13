@@ -10,6 +10,7 @@ namespace MifielAPI
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }
+        public string CompanyId { get; set; }
         private string _apiVersion = "/api/v1/";
         private CultureInfo _usCulture = new CultureInfo("en-US");
         private string url;
@@ -32,6 +33,14 @@ namespace MifielAPI
             AppId = appId;
             AppSecret = appSecret;
             Url = "https://www.mifiel.com";
+        }
+
+        public ApiClient(string appId, string appSecret, string companyId)
+        {
+            AppId = appId;
+            AppSecret = appSecret;
+            Url = "https://www.mifiel.com";
+            CompanyId = companyId;
         }
 
         public HttpContent Get(string path)
@@ -114,6 +123,11 @@ namespace MifielAPI
 
             requestMessage.Headers.Add("Authorization", authorizationHeader);
             requestMessage.Headers.Add("Date", date);
+
+            if (!String.IsNullOrEmpty(CompanyId))
+            {
+                requestMessage.Headers.Add("MF-COMPANY", CompanyId);
+            }
         }
 
         private string GetSignature(Rest.HttpMethod httpMethod, string path, string contentMd5, string date, string contentType)
