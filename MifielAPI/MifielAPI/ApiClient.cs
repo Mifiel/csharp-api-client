@@ -31,7 +31,7 @@ namespace MifielAPI
         {
             AppId = appId;
             AppSecret = appSecret;
-            Url = "https://www.mifiel.com";
+            Url = "https://app.mifiel.com";
         }
 
         public HttpContent Get(string path)
