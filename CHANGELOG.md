@@ -8,6 +8,10 @@
 - Sandbox documentation and examples now use `https://app-sandbox.mifiel.com` instead of `https://sandbox.mifiel.com`.
 - Package version jumped from `0.0.4` to `1.0.0` to mark this default-host breaking change.
 
+### Features
+
+- Send a standardized `User-Agent` on API requests, e.g. `DOTNET/4.0.30319.42000 MifielAPIClient/1.0.0 HttpClient/4.0.0.0 (Unix/6.8.0)`.
+
 ### Migration
 
 ```csharp
