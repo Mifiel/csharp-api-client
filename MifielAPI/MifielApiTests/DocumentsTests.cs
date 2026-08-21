@@ -35,7 +35,7 @@ namespace MifielApiTests
         [Test]
         public void Documents__CorrectUrl__ShouldNotThrowAnException()
         {
-            _apiClient.Url = "https://sandbox.mifiel.com";
+            _apiClient.Url = "https://app-sandbox.mifiel.com";
         }
 
         [Test]
@@ -201,7 +201,7 @@ namespace MifielApiTests
 
         private void SetSandboxUrl()
         {
-            _apiClient.Url = "https://sandbox.mifiel.com";
+            _apiClient.Url = "https://app-sandbox.mifiel.com";
         }
     }
 }
