@@ -25,6 +25,9 @@ Through Mifiel’s API, you can easily manage documents and certificates within 
     <InternalsVisibleTo Include="MifielAPITests" />
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MifielAPITests" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
