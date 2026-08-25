@@ -1,4 +1,4 @@
-﻿using MifielAPI.Exceptions;
+using MifielAPI.Exceptions;
 using MifielAPI.Utils;
 using System;
 using System.Net.Http;
@@ -8,6 +8,9 @@ namespace MifielAPI
 {
     public class ApiClient
     {
+        public const string PackageName = "MifielAPIClient";
+        public const string PackageVersion = "1.0.0";
+
         public string AppId { get; set; }
         public string AppSecret { get; set; }
         private string _apiVersion = "/api/v1/";
@@ -31,7 +34,7 @@ namespace MifielAPI
         {
             AppId = appId;
             AppSecret = appSecret;
-            Url = "https://www.mifiel.com";
+            Url = "https://app.mifiel.com";
         }
 
         public HttpContent Get(string path)
@@ -114,6 +117,28 @@ namespace MifielAPI
 
             requestMessage.Headers.Add("Authorization", authorizationHeader);
             requestMessage.Headers.Add("Date", date);
+            requestMessage.Headers.TryAddWithoutValidation("User-Agent", UserAgent());
+        }
+
+        /// <summary>
+        /// Example: DOTNET/4.0.30319.42000 MifielAPIClient/1.0.0 HttpClient/4.0.0.0 (Unix/6.8.0)
+        /// </summary>
+        public string UserAgent()
+        {
+            string runtimeVersion = Environment.Version.ToString();
+            string httpClientVersion = typeof(HttpClient).Assembly.GetName().Version != null
+                ? typeof(HttpClient).Assembly.GetName().Version.ToString()
+                : "-";
+            string osName = Environment.OSVersion.Platform.ToString().Replace(" ", "_");
+            string osVersion = Environment.OSVersion.Version.ToString().Replace(" ", "_");
+
+            return string.Format("DOTNET/{0} {1}/{2} HttpClient/{3} ({4}/{5})",
+                runtimeVersion,
+                PackageName,
+                PackageVersion,
+                httpClientVersion,
+                osName,
+                osVersion);
         }
 
         private string GetSignature(Rest.HttpMethod httpMethod, string path, string contentMd5, string date, string contentType)

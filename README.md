@@ -11,9 +11,9 @@ TODO
 
 For your convenience Mifiel offers a Sandbox environment where you can confidently test your code.
 
-To start using the API in the Sandbox environment you need to first create an account at [sandbox.mifiel.com](https://sandbox.mifiel.com).
+To start using the API in the Sandbox environment you need to first create an account at [app-sandbox.mifiel.com](https://app-sandbox.mifiel.com).
 
-Once you have an account you will need an APP_ID and an APP_SECRET which you can generate in [sandbox.mifiel.com/access_tokens](https://sandbox.mifiel.com/access_tokens).
+Once you have an account you will need an APP_ID and an APP_SECRET which you can generate in [app-sandbox.mifiel.com/settings/access-tokens](https://app-sandbox.mifiel.com/settings/access-tokens).
 
 Then you can configure the library with:
 
@@ -22,8 +22,10 @@ Then you can configure the library with:
 
   ApiClient apiClient = new ApiClient(appId, appSecret);
   // if you want to use our sandbox environment use:
-  apiClient.Url = "https://sandbox.mifiel.com";
+  apiClient.Url = "https://app-sandbox.mifiel.com";
 ```
+
+By default the client talks to production (`https://app.mifiel.com`).
 
 Document methods:
 
