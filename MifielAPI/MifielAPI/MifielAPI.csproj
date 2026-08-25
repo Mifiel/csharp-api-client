@@ -22,6 +22,7 @@ Through Mifiel’s API, you can easily manage documents and certificates within 
     <Summary>C# SDK for mifiel.com.</Summary>
     <IsPackable>true</IsPackable>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <InternalsVisibleTo Include="MifielAPITests" />
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

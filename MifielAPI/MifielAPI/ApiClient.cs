@@ -33,6 +33,7 @@ namespace MifielAPI
         public string AppSecret { get; set; }
         private string _apiVersion = "/api/v1/";
         private CultureInfo _usCulture = new CultureInfo("en-US");
+        private readonly HttpMessageHandler _httpMessageHandler;
         private string url;
 
         public string Url
@@ -49,9 +50,15 @@ namespace MifielAPI
         }
 
         public ApiClient(string appId, string appSecret)
+            : this(appId, appSecret, new HttpClientHandler())
+        {
+        }
+
+        internal ApiClient(string appId, string appSecret, HttpMessageHandler httpMessageHandler)
         {
             AppId = appId;
             AppSecret = appSecret;
+            _httpMessageHandler = httpMessageHandler ?? throw new ArgumentNullException(nameof(httpMessageHandler));
             Url = "https://app.mifiel.com";
         }
 
@@ -86,7 +93,7 @@ namespace MifielAPI
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
 
-            using (var client = new HttpClient())
+            using (var client = new HttpClient(_httpMessageHandler, disposeHandler: false))
             {
                 client.Timeout = TimeSpan.FromMinutes(5);
                 using (content)

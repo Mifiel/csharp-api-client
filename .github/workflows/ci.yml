@@ -24,7 +24,3 @@ jobs:
 
       - name: Test
         run: dotnet test MifielAPI/MifielAPI.sln --configuration Release --no-build --verbosity normal
-        env:
-          MIFIEL_APP_ID: ${{ secrets.MIFIEL_APP_ID }}
-          MIFIEL_APP_SECRET: ${{ secrets.MIFIEL_APP_SECRET }}
-          MIFIEL_BASE_URL: ${{ secrets.MIFIEL_BASE_URL }}

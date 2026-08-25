@@ -20,11 +20,12 @@
     <None Update="test-pdf.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="csharp-test-pdf.pdf">
+    <None Update="csharp-test-pdf.pdf" Condition="Exists('csharp-test-pdf.pdf')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="file_hash.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Remove="CsharpDocumentSmokeTests.cs" Condition="!Exists('CsharpDocumentSmokeTests.cs')" />
   </ItemGroup>
 </Project>
