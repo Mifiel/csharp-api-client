@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace MifielAPI
 {
-    public class ApiClient
+    public class ApiClient : IDisposable
     {
         public const string PackageName = "MifielAPIClient";
 
@@ -34,6 +34,7 @@ namespace MifielAPI
         private string _apiVersion = "/api/v1/";
         private CultureInfo _usCulture = new CultureInfo("en-US");
         private readonly HttpMessageHandler _httpMessageHandler;
+        private readonly bool _ownsHttpMessageHandler;
         private string url;
 
         public string Url
@@ -50,16 +51,30 @@ namespace MifielAPI
         }
 
         public ApiClient(string appId, string appSecret)
-            : this(appId, appSecret, new HttpClientHandler())
+            : this(appId, appSecret, new HttpClientHandler(), true)
         {
         }
 
         internal ApiClient(string appId, string appSecret, HttpMessageHandler httpMessageHandler)
+            : this(appId, appSecret, httpMessageHandler, false)
+        {
+        }
+
+        private ApiClient(string appId, string appSecret, HttpMessageHandler httpMessageHandler, bool ownsHttpMessageHandler)
         {
             AppId = appId;
             AppSecret = appSecret;
             _httpMessageHandler = httpMessageHandler ?? throw new ArgumentNullException(nameof(httpMessageHandler));
+            _ownsHttpMessageHandler = ownsHttpMessageHandler;
             Url = "https://app.mifiel.com";
+        }
+
+        public void Dispose()
+        {
+            if (_ownsHttpMessageHandler)
+            {
+                _httpMessageHandler.Dispose();
+            }
         }
 
         public HttpContent Get(string path)

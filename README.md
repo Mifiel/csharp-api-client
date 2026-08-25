@@ -8,13 +8,13 @@ Please read our [documentation](http://docs.mifiel.com/) for instructions on how
 
 Requires **.NET 8** or later. The client is published on NuGet as [MifielAPIClient](https://www.nuget.org/packages/MifielAPIClient).
 
-```
+```shell
 dotnet add package MifielAPIClient
 ```
 
 Or from the Visual Studio Package Manager Console:
 
-```
+```shell
 Install-Package MifielAPIClient
 ```
 
@@ -195,21 +195,21 @@ This SDK ships as the NuGet package **MifielAPIClient** ([nuget.org/packages/Mif
 1. **Bump the version** in `MifielAPI/MifielAPI/MifielAPI.csproj` (`<Version>`) and add a heading in `CHANGELOG.md`. The `User-Agent` package version is read from that assembly attribute; do not hard-code it elsewhere.
 2. **Pack:**
 
-   ```
+   ```shell
    dotnet pack MifielAPI/MifielAPI/MifielAPI.csproj -c Release -o artifacts
    ```
 
    The artifact is `artifacts/MifielAPIClient.<version>.nupkg`.
 3. **Publish to nuget.org** with an API key from [nuget.org/account/apikeys](https://www.nuget.org/account/apikeys). Versions cannot be overwritten once pushed.
 
-   ```
+   ```shell
    dotnet nuget push artifacts/MifielAPIClient.<version>.nupkg \
      --source https://api.nuget.org/v3/index.json \
      --api-key "$NUGET_API_KEY"
    ```
 4. **Tag the git commit** and create a GitHub release:
 
-   ```
+   ```shell
    git tag v<version>
    git push origin v<version>
    gh release create v<version> --title "v<version>" --notes-file CHANGELOG.md
@@ -219,6 +219,6 @@ The listing usually appears on nuget.org within a few minutes. Confirm at `https
 
 Smoke tests (optional) use the same SDK:
 
-```
+```shell
 dotnet test MifielAPI/MifielAPI.sln --filter Category=Smoke
 ```

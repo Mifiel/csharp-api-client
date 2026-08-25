@@ -8,7 +8,8 @@ WORKDIR /src
 COPY . /src
 
 RUN dotnet restore MifielAPI/MifielAPI.sln \
-    && dotnet build MifielAPI/MifielAPI.sln --configuration Release --no-restore
+    && dotnet build MifielAPI/MifielAPI.sln --configuration Release --no-restore \
+    && chown -R app:app /src
 
-WORKDIR /src
-CMD ["dotnet", "test", "MifielAPI/MifielAPI.sln", "--configuration", "Release", "--no-build"]
+USER app
+CMD ["dotnet", "test", "MifielAPI/MifielAPI.sln", "--configuration", "Release", "--no-build", "--filter", "Category!=Smoke"]
