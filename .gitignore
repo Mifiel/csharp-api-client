@@ -158,6 +158,14 @@ publish/
 *.nuget.props
 *.nuget.targets
 
+# Packed artifacts
+artifacts/
+
+# Local pre-release smoke tests
+MifielAPI/MifielAPI.Tests/CsharpDocumentSmokeTests.cs
+MifielAPI/MifielAPI.Tests/csharp-test-pdf.pdf
+test.sh
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef

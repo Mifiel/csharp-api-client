@@ -14,7 +14,6 @@ namespace MifielAPI.Utils
     public static class MifielUtils
     {
         private static Regex _rgx = new Regex("/+$");
-        private static SHA256 _sha256 = SHA256.Create();
         private static UTF8Encoding _utfEncoding = new UTF8Encoding();
 
         internal static bool IsValidUrl(string url)
@@ -36,8 +35,8 @@ namespace MifielAPI.Utils
             {
                 using (FileStream stream = File.OpenRead(path))
                 {
-                    byte[] hashValue = _sha256.ComputeHash(stream);
-                    return BitConverter.ToString(hashValue).Replace("-", string.Empty);
+                    byte[] hashValue = SHA256.HashData(stream);
+                    return Convert.ToHexString(hashValue);
                 }
             }
             catch (Exception ex)
@@ -51,8 +50,8 @@ namespace MifielAPI.Utils
             try
             {
                 byte[] contentBytes = _utfEncoding.GetBytes(content);
-                byte[] conetntHash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(contentBytes);
-                return BitConverter.ToString(conetntHash).Replace("-", string.Empty);
+                byte[] contentHash = MD5.HashData(contentBytes);
+                return Convert.ToHexString(contentHash);
             }
             catch (Exception ex)
             {
@@ -77,10 +76,10 @@ namespace MifielAPI.Utils
         {
             try
             {
-                HMACSHA1 hmacSha1 = new HMACSHA1(Encoding.UTF8.GetBytes(appSecret));
-                byte[] byteArray = Encoding.ASCII.GetBytes(canonicalString);
-                MemoryStream stream = new MemoryStream(byteArray);
-                return Convert.ToBase64String(hmacSha1.ComputeHash(stream));
+                byte[] hash = HMACSHA1.HashData(
+                    Encoding.UTF8.GetBytes(appSecret),
+                    Encoding.ASCII.GetBytes(canonicalString));
+                return Convert.ToBase64String(hash);
             }
             catch (Exception ex)
             {

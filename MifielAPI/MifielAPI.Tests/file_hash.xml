@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<electronicDocument version="2.0.0" signed="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.mifiel.com/XMLFiesta" xsi:schemaLocation="https://www.mifiel.com/XMLFiesta https://sandbox.mifiel.com/xml-fiesta/schemas/v2.0.0.xsd">
+  <file name="file_hash.pdf" originalHash="e1a580c27d22b432a8c6f4c57aec89dca46bb89b492d3bc537bf90282a6889da" contentType="application/pdf"></file>
+  <signers>
+    <signer id="XAXX010101000" name="Test Signer" email="signer@example.com">
+      <certificate number="1" issuer="Test">TEST</certificate>
+    </signer>
+  </signers>
+</electronicDocument>
