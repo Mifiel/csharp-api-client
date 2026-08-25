@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MifielAPI", "MifielAPI\MifielAPI.csproj", "{D5C2109D-2E52-41D6-9B32-71FF7E7B5A96}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MifielAPITests", "MifielAPITests\MifielApiTests.csproj", "{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MifielAPITests", "MifielAPI.Tests\MifielApiTests.csproj", "{EC120768-5963-4D7E-80F3-FCEC17CE5CB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
