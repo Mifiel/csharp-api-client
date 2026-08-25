@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore MifielAPI/MifielAPI.sln
+
+      - name: Build
+        run: dotnet build MifielAPI/MifielAPI.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test MifielAPI/MifielAPI.sln --configuration Release --no-build --verbosity normal
+        env:
+          MIFIEL_APP_ID: ${{ secrets.MIFIEL_APP_ID }}
+          MIFIEL_APP_SECRET: ${{ secrets.MIFIEL_APP_SECRET }}
+          MIFIEL_BASE_URL: ${{ secrets.MIFIEL_BASE_URL }}

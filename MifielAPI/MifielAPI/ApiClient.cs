@@ -1,15 +1,33 @@
 using MifielAPI.Exceptions;
 using MifielAPI.Utils;
 using System;
-using System.Net.Http;
 using System.Globalization;
+using System.Net.Http;
+using System.Reflection;
 
 namespace MifielAPI
 {
     public class ApiClient
     {
         public const string PackageName = "MifielAPIClient";
-        public const string PackageVersion = "1.0.0";
+
+        public static string PackageVersion
+        {
+            get
+            {
+                var informational = typeof(ApiClient).Assembly
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                    ?.InformationalVersion;
+                if (string.IsNullOrEmpty(informational))
+                {
+                    var version = typeof(ApiClient).Assembly.GetName().Version;
+                    return version != null ? version.ToString(3) : "0.0.0";
+                }
+
+                var plus = informational.IndexOf('+');
+                return plus >= 0 ? informational.Substring(0, plus) : informational;
+            }
+        }
 
         public string AppId { get; set; }
         public string AppSecret { get; set; }
@@ -67,7 +85,6 @@ namespace MifielAPI
             string requestUri = url + _apiVersion + path;
             HttpRequestMessage requestMessage = null;
             HttpResponseMessage httpResponse = null;
-            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
             using (var client = new HttpClient())
             {
@@ -109,19 +126,21 @@ namespace MifielAPI
 
         private void SetAuthentication(Rest.HttpMethod httpMethod, string path, HttpRequestMessage requestMessage)
         {
-            string contentType = requestMessage.Content == null ? "" : requestMessage.Content.Headers.ContentType.ToString();
+            string contentType = requestMessage.Content == null || requestMessage.Content.Headers.ContentType == null
+                ? ""
+                : requestMessage.Content.Headers.ContentType.ToString();
             string date = DateTime.Now.ToUniversalTime().ToString("r", _usCulture);
             string contentMd5 = "";// MifielUtils.CalculateMD5(content);
             string signature = GetSignature(httpMethod, path, contentMd5, date, contentType);
             string authorizationHeader = string.Format("APIAuth {0}:{1}", AppId, signature);
 
             requestMessage.Headers.Add("Authorization", authorizationHeader);
-            requestMessage.Headers.Add("Date", date);
+            requestMessage.Headers.TryAddWithoutValidation("Date", date);
             requestMessage.Headers.TryAddWithoutValidation("User-Agent", UserAgent());
         }
 
         /// <summary>
-        /// Example: DOTNET/4.0.30319.42000 MifielAPIClient/1.0.0 HttpClient/4.0.0.0 (Unix/6.8.0)
+        /// Example: DOTNET/8.0.0 MifielAPIClient/1.0.0 HttpClient/8.0.0.0 (Unix/24.6.0)
         /// </summary>
         public string UserAgent()
         {

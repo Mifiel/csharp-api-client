@@ -158,6 +158,9 @@ publish/
 *.nuget.props
 *.nuget.targets
 
+# Packed artifacts
+artifacts/
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
