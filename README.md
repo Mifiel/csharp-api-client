@@ -1,8 +1,15 @@
 # csharp-api-client
-Mifiel API Client for C#
 
-C# SDK for [Mifiel](https://www.mifiel.com) API.
-Please read our [documentation](http://docs.mifiel.com/) for instructions on how to start using the API.
+C# SDK for the [Mifiel](https://www.mifiel.com) API.
+
+## Documentation
+
+API reference, guides, and examples:
+
+- English: https://docs.mifiel.com/en/
+- Español: https://docs.mifiel.com/es/
+
+This README covers installation and client setup only.
 
 ## Installation
 
@@ -18,207 +25,38 @@ Or from the Visual Studio Package Manager Console:
 Install-Package MifielAPIClient
 ```
 
-## Usage
+## Setup
 
-For your convenience Mifiel offers a Sandbox environment where you can confidently test your code.
-
-To start using the API in the Sandbox environment you need to first create an account at [app-sandbox.mifiel.com](https://app-sandbox.mifiel.com).
-
-Once you have an account you will need an APP_ID and an APP_SECRET which you can generate in [app-sandbox.mifiel.com/settings/access-tokens](https://app-sandbox.mifiel.com/settings/access-tokens).
-
-Then you can configure the library with:
+1. Create an account (production or [sandbox](https://app-sandbox.mifiel.com)).
+2. Generate an `APP_ID` and `APP_SECRET` in [Access Tokens](https://app-sandbox.mifiel.com/settings/access-tokens).
+3. Configure the client:
 
 ```csharp
-  using MifielAPI;
+using MifielAPI;
 
-  ApiClient apiClient = new ApiClient(appId, appSecret);
-  // if you want to use our sandbox environment use:
-  apiClient.Url = "https://app-sandbox.mifiel.com";
+ApiClient apiClient = new ApiClient(appId, appSecret);
+// Production is the default (https://app.mifiel.com).
+// For sandbox:
+apiClient.Url = "https://app-sandbox.mifiel.com";
 ```
-
-By default the client talks to production (`https://app.mifiel.com`).
-
-Document methods:
-
-- Find:
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-
-    Documents documents = new Documents(apiClient);
-    Document document = documents.Find("id");
-    document.OriginalHash;
-    document.File;
-    document.FileSigned;
-    // ...
-  ```
-
-- Find all:
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-    using System.Collections.Generic;
-
-    Documents documents = new Documents(apiClient);
-    List<Document> allDocuments = documents.FindAll();
-  ```
-
-- Create:
-
-> Use only **original_hash** if you dont want us to have the file.<br>
-> Only **file** or **original_hash** must be provided.
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-    using MifielAPI.Utils;
-    using System.Collections.Generic;
-
-    Documents documents = new Documents(_apiClient);
-    Document document = new Document()
-    {
-      File = "path/to/my-file.pdf",
-      Signatures = new List<Signature>()
-      {
-        new Signature()
-        {
-          SignatureStr = "Signer 1",
-          Email = "signer1@email.com",
-          TaxId = "AAA010101AAA"
-        },
-        new Signature()
-        {
-          SignatureStr = "Signer 2",
-          Email = "signer2@email.com",
-          TaxId = "AAA010102AAA"
-        }
-      }
-    };
-
-    documents.Save(document);
-
-    // if you dont want us to have the PDF, you can just send us
-    // the original_hash and the name of the document. Both are required
-    Document document2 = new Document()
-    {
-      OriginalHash = MifielUtils.GetDocumentHash("path/to/my-file.pdf"),
-      Signatures = ...
-    }
-
-    documents.Save(document2);
-  ```
-
-- Save Document related files
-
-```csharp
-  using MifielAPI.Dao;
-  using MifielAPI.Objects;
-  using MifielAPI.Utils;
-
-  Documents documents = new Documents(apiClient);
-  Document document = documents.Find("id");
-
-  //save the original file
-  documents.SaveFile(document.Id, "path/to/save/file.pdf");
-  //save the signed xml file
-  documents.SaveXml(document.Id, "path/to/save/xml.xml");
-
-  //append pdf base64 in original xml (when document was created using the hash)
-  MifielUtils.AppendPDFBase64InOriginalXml("path/to/file.pdf", "path/to/originalXml", "path/to/newXml");
-```
-
-- Delete
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-
-    Documents documents = new Documents(apiClient);
-    documents.Delete("id");
-  ```
-
-Certificate methods:
-
-- Find:
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-
-    Certificates certificates = new Certificates(apiClient);
-    Certificate certificate = certificates.Find("id");
-    certificate.CerHex;
-    certificate.TypeOf;
-    // ...
-  ```
-
-- Find all:
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-    using System.Collections.Generic;
-
-    Certificates certificates = new Certificates(apiClient);
-    List<Certificate> allCertificates = certificates.FindAll();
-  ```
-
-- Create
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-
-    Certificates certificates = new Certificates(apiClient);
-    Certificate certificate = new Certificate();
-    certificate.File = "path/to/my-certificate.cer";
-
-    certificates.Save(certificate);
-  ```
-
-- Delete
-
-  ```csharp
-    using MifielAPI.Dao;
-    using MifielAPI.Objects;
-
-    Certificates certificates = new Certificates(apiClient);
-    certificates.Delete("id");
-  ```
 
 ## Releasing
 
 This SDK ships as the NuGet package **MifielAPIClient** ([nuget.org/packages/MifielAPIClient](https://www.nuget.org/packages/MifielAPIClient)). It targets `net8.0` and is built with the .NET SDK (`dotnet pack` / `dotnet nuget push`).
 
-1. **Bump the version** in `MifielAPI/MifielAPI/MifielAPI.csproj` (`<Version>`) and add a heading in `CHANGELOG.md`. The `User-Agent` package version is read from that assembly attribute; do not hard-code it elsewhere.
+1. **Bump the version** in `MifielAPI/MifielAPI/MifielAPI.csproj` (`<Version>`) and add a heading in `CHANGELOG.md`.
 2. **Pack:**
 
    ```shell
    dotnet pack MifielAPI/MifielAPI/MifielAPI.csproj -c Release -o artifacts
    ```
 
-   The artifact is `artifacts/MifielAPIClient.<version>.nupkg`.
-3. **Publish to nuget.org** with an API key from [nuget.org/account/apikeys](https://www.nuget.org/account/apikeys). Versions cannot be overwritten once pushed.
+3. **Publish to nuget.org** with an API key from [nuget.org/account/apikeys](https://www.nuget.org/account/apikeys):
 
    ```shell
    dotnet nuget push artifacts/MifielAPIClient.<version>.nupkg \
      --source https://api.nuget.org/v3/index.json \
      --api-key "$NUGET_API_KEY"
    ```
-4. **Tag the git commit** and create a GitHub release:
 
-   ```shell
-   git tag v<version>
-   git push origin v<version>
-   gh release create v<version> --title "v<version>" --notes-file CHANGELOG.md
-   ```
-
-The listing usually appears on nuget.org within a few minutes. Confirm at `https://www.nuget.org/packages/MifielAPIClient/<version>`.
-
-Smoke tests (optional) use the same SDK:
-
-```shell
-dotnet test MifielAPI/MifielAPI.sln --filter Category=Smoke
-```
+4. **Tag the git commit** and create a GitHub release.
